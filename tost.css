@@ -1,0 +1,95 @@
+/* ================= PREMIUM TOAST NOTIFICATIONS ================= */
+.toast-container {
+    position: fixed;
+    top: env(safe-area-inset-top, 20px); /* Мобилдик экрандардын жогору жагына ылайыкташуу */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 11000;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none; /* Контентти жаппаш үчүн */
+}
+
+.toast {
+    pointer-events: auto;
+    background: rgba(28, 33, 40, 0.85); /* Midnight Blue тунук фон */
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    padding: 16px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    animation: toastSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Тосттун түрлөрү үчүн сол жактагы түстүү тилке жана иконка түсү */
+.toast.success { border-left: 5px solid #00ff88; }
+.toast.error { border-left: 5px solid #ff4757; }
+.toast.info { border-left: 5px solid #a855f7; }
+
+/* Иконкалардын стили */
+.toast .material-icons-round {
+    font-size: 22px;
+}
+.toast.success .material-icons-round { color: #00ff88; }
+.toast.error .material-icons-round { color: #ff4757; }
+.toast.info .material-icons-round { color: #a855f7; }
+
+/* Тексттин стили */
+.toast-message {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    flex: 1;
+}
+
+/* Прогресс бар (билдирүүнүн убактысы бүтүп жатканын көрсөтөт) */
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    width: 100%;
+    animation: toastProgress 3s linear forwards;
+}
+
+/* Анимациялар */
+@keyframes toastSlideIn {
+    from { 
+        transform: translateY(-50px) scale(0.9); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+}
+
+@keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Чыгып кетүү анимациясы (JS аркылуу 'hide' классын кошкондо) */
+.toast.hide {
+    animation: toastFadeOut 0.4s ease forwards;
+}
+
+@keyframes toastFadeOut {
+    to { 
+        transform: scale(0.8); 
+        opacity: 0; 
+        margin-top: -60px;
+    }
+}
