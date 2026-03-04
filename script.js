@@ -25,14 +25,14 @@ const db = getFirestore(app);
 const ADMIN_EMAIL = "cinematoktogul@gmail.com";
 const IMGBB_API_KEY = "B0e9710e452799f0de0e787b998c600d";
 
-// --- 2. TOAST БИЛДИРМЕЛЕР (Стилдүү) ---
+// --- 2. TOAST БИЛДИРМЕЛЕР ---
 window.showToast = (message, type = 'success') => {
-    const container = document.querySelector('.toast-container') || (() => {
-        const div = document.createElement('div');
-        div.className = 'toast-container';
-        document.body.appendChild(div);
-        return div;
-    })();
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
 
     const icons = { success: 'check_circle', error: 'error', info: 'info' };
     const toast = document.createElement('div');
@@ -49,7 +49,86 @@ window.showToast = (message, type = 'success') => {
     }, 3500);
 };
 
-// --- 3. НАВИГАЦИЯ ---
+// --- 3. АВТОРИЗАЦИЯ ЖАНА АДМИН ПАНЕЛГЕ ӨТҮҮ ---
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("Кирген колдонуучу:", user.email);
+        
+        // Эгерде админ кирсе, дароо admin.html баракчасына жөнөтүү
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+            window.location.replace("admin.html"); 
+            return;
+        }
+
+        // Жөнөкөй колдонуучу болсо профилин көрсөтүү
+        const authUi = document.getElementById('auth-ui');
+        const profileUi = document.getElementById('user-profile-ui');
+        if (authUi) authUi.style.display = "none";
+        if (profileUi) profileUi.style.display = "block";
+        
+        const emailDisplay = document.getElementById('user-email-display');
+        if (emailDisplay) emailDisplay.innerText = user.displayName || user.email;
+        
+        initUserTickets(user.uid);
+    } else {
+        const authUi = document.getElementById('auth-ui');
+        const profileUi = document.getElementById('user-profile-ui');
+        if (authUi) authUi.style.display = "block";
+        if (profileUi) profileUi.style.display = "none";
+        window.showAuthScreen('login-screen');
+    }
+});
+
+// Кирүү функциясы
+const loginActionBtn = document.getElementById('login-action-btn');
+if (loginActionBtn) {
+    loginActionBtn.onclick = async () => {
+        const email = document.getElementById('login-email-input').value.trim();
+        const pass = document.getElementById('login-pass-input').value;
+
+        if (!email || !pass) return showToast("Логин жана паролду жазыңыз", "info");
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+            showToast("Ийгиликтүү кирдиңиз!");
+            
+            // Админ болсо багыттоо AuthStateChanged ичинде автоматтык түрдө болот
+        } catch (err) {
+            console.error(err);
+            showToast("Ката: Логин же пароль туура эмес", "error");
+        }
+    };
+}
+
+// Каттоо функциясы
+const regActionBtn = document.getElementById('reg-action-btn');
+if (regActionBtn) {
+    regActionBtn.onclick = async () => {
+        const name = document.getElementById('reg-name-input').value.trim();
+        const email = document.getElementById('reg-email-input').value.trim();
+        const pass = document.getElementById('reg-pass-input').value;
+
+        if (!name || pass.length < 6) return showToast("Маалыматтарды туура толтуруңуз (пароль 6+ символ)", "info");
+
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(res.user, { displayName: name });
+            showToast("Каттоо ийгиликтүү аяктады!");
+        } catch (err) {
+            showToast("Бул почта мурун катталган же ката кетти", "error");
+        }
+    };
+}
+
+window.handleLogout = () => signOut(auth).then(() => {
+    showToast("Системадан чыктыңыз", "info");
+    setTimeout(() => window.location.reload(), 500);
+});
+
+const logoutBtn = document.querySelector('.logout-btn');
+if (logoutBtn) logoutBtn.onclick = window.handleLogout;
+
+// --- 4. НАВИГАЦИЯ ---
 window.switchSection = (targetId) => {
     document.querySelectorAll('.content-section').forEach(s => {
         s.style.display = 'none';
@@ -73,61 +152,17 @@ document.querySelectorAll('.nav-item').forEach(item => {
 
 window.showAuthScreen = (screenId) => {
     document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
+    const target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
 };
 
-// --- 4. АВТОРИЗАЦИЯ ---
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        if (user.email === ADMIN_EMAIL) {
-            window.location.href = "admin.html";
-            return;
-        }
-        document.getElementById('auth-ui').style.display = "none";
-        document.getElementById('user-profile-ui').style.display = "block";
-        document.getElementById('user-email-display').innerText = user.displayName || user.email;
-        initUserTickets(user.uid);
-    } else {
-        document.getElementById('auth-ui').style.display = "block";
-        document.getElementById('user-profile-ui').style.display = "none";
-        window.showAuthScreen('login-screen');
-    }
-});
-
-document.getElementById('login-action-btn').onclick = async () => {
-    const e = document.getElementById('login-email-input').value.trim();
-    const p = document.getElementById('login-pass-input').value;
-    if(!e || !p) return showToast("Маалыматтарды толтуруңуз", "info");
-    try { 
-        await signInWithEmailAndPassword(auth, e, p); 
-        showToast("Кош келиңиз!");
-    } catch (err) { showToast("Логин же пароль ката!", "error"); }
-};
-
-document.getElementById('reg-action-btn').onclick = async () => {
-    const name = document.getElementById('reg-name-input').value.trim();
-    const email = document.getElementById('reg-email-input').value.trim();
-    const pass = document.getElementById('reg-pass-input').value;
-    if(!name || pass.length < 6) return showToast("Пароль 6 символдон аз болбосун", "info");
-    try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(res.user, { displayName: name });
-        showToast("Каттоо ийгиликтүү!");
-    } catch (err) { showToast("Бул почта мурун катталган!", "error"); }
-};
-
-window.handleLogout = () => signOut(auth).then(() => {
-    showToast("Системадан чыктыңыз", "info");
-    setTimeout(() => location.reload(), 500);
-});
-document.querySelector('.logout-btn').onclick = window.handleLogout;
-
-// --- 5. КИНО ЖАНА БРОНДОО (СЕАНСТАР МЕНЕН) ---
+// --- 5. КИНОЛОРДУ ЧЫГАРУУ ---
 function initMovies() {
     onSnapshot(collection(db, "movies"), (snap) => {
         const main = document.getElementById('main-movie-grid');
         const soon = document.getElementById('soon-movie-grid');
-        main.innerHTML = ""; soon.innerHTML = "";
+        if (main) main.innerHTML = ""; 
+        if (soon) soon.innerHTML = "";
         
         snap.forEach(docSnap => {
             const m = docSnap.data();
@@ -141,25 +176,30 @@ function initMovies() {
                         ? `<button class="glass-btn" onclick="openBooking('${docSnap.id}', '${m.title}')">Билет алуу</button>` 
                         : `<span class="glass-date-tag">Жакында</span>`}
                 </div>`;
-            if(m.category === 'now') main.appendChild(card);
-            else soon.appendChild(card);
+            if (m.category === 'now' && main) main.appendChild(card);
+            else if (soon) soon.appendChild(card);
         });
     });
 }
 
+// --- 6. БРОНДОО (MODAL) ---
 window.openBooking = async (movieId, title) => {
-    if(!auth.currentUser) return (showToast("Алгач катталыңыз!", "info"), window.switchSection('profile-section'));
+    if (!auth.currentUser) {
+        showToast("Алгач катталыңыз!", "info");
+        window.switchSection('profile-section');
+        return;
+    }
     
     document.getElementById('selected-movie-name').innerText = title;
     const chipsCont = document.getElementById('movie-sessions-list');
-    chipsCont.innerHTML = "Жүктөлүүдө...";
+    chipsCont.innerHTML = "<p style='color:grey; font-size:12px;'>Жүктөлүүдө...</p>";
     document.getElementById('booking-modal').style.display = 'flex';
     window.goToStep1();
 
-    // Сеанстарды базадан алуу
     onSnapshot(doc(db, "movies", movieId), (docSnap) => {
         const sessions = docSnap.data().sessions || [];
         chipsCont.innerHTML = "";
+        if (sessions.length === 0) chipsCont.innerHTML = "Сеанстар жок";
         sessions.forEach(s => {
             const chip = document.createElement('div');
             chip.className = "time-chip";
@@ -183,7 +223,7 @@ window.goToStep2 = () => {
     const name = document.getElementById('user-name').value.trim();
     const phone = document.getElementById('user-phone').value.trim();
     const sess = document.getElementById('selected-session-time').value;
-    if(!name || !phone || !sess) return showToast("Маалыматтарды толук толтуруңуз!", "info");
+    if (!name || !phone || !sess) return showToast("Маалыматтарды толук толтуруңуз!", "info");
     document.getElementById('step-1').style.display = 'none';
     document.getElementById('step-2').style.display = 'block';
 };
@@ -191,10 +231,10 @@ window.goToStep2 = () => {
 window.handlePaymentSubmit = async () => {
     const file = document.getElementById('check-file-input').files[0];
     const btn = document.getElementById('final-confirm-btn');
-    if(!file) return showToast("Чекти жүктөңүз!", "error");
+    if (!file) return showToast("Төлөм чегин жүктөңүз!", "error");
 
     try {
-        btn.disabled = true; btn.innerText = "Күтө туруңуз...";
+        btn.disabled = true; btn.innerText = "Жөнөтүлүүдө...";
         const formData = new FormData();
         formData.append("image", file);
         const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
@@ -212,13 +252,16 @@ window.handlePaymentSubmit = async () => {
             createdAt: serverTimestamp()
         });
 
-        showToast("Өтүнмө жөнөтүлдү!");
+        showToast("Өтүнмө ийгиликтүү жөнөтүлдү!");
         window.closeBookingModal();
-    } catch (err) { showToast("Ката кетти!", "error"); } 
-    finally { btn.disabled = false; btn.innerText = "Ырастоо"; }
+    } catch (err) {
+        showToast("Ката кетти, кайра аракет кылыңыз", "error");
+    } finally {
+        btn.disabled = false; btn.innerText = "Ырастоо";
+    }
 };
 
-// --- 6. БИЛЕТТЕР ЖАНА QR (Сиздин стилде) ---
+// --- 7. КОЛДОНУУЧУНУН БИЛЕТТЕРИ ЖАНА QR ---
 function initUserTickets(uid) {
     onSnapshot(collection(db, "user_tickets"), (snap) => {
         const list = document.getElementById('user-tickets-list');
@@ -336,10 +379,11 @@ function initUserTickets(uid) {
     });
 }
 
-window.deleteTicket = async (ticketId) => {
-    if(confirm("Билетти өчүрөсүзбү?")) {
-        try { await deleteDoc(doc(db, "user_tickets", ticketId)); showToast("Билет өчүрүлдү", "info"); } catch (e) { showToast("Ката!", "error"); }
+window.deleteTicket = async (id) => {
+    if (confirm("Билетти өчүрөсүзбү?")) {
+        try { await deleteDoc(doc(db, "user_tickets", id)); showToast("Өчүрүлдү", "info"); } catch (e) { showToast("Ката", "error"); }
     }
 };
 
 initMovies();
+                            
