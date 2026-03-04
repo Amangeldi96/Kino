@@ -29,7 +29,7 @@ let html5QrCode;
 let isScanning = false;
 let scannerInitialized = false; 
 
-//============== 2. БИЛДИРҮҮЛӨР (TOAST) =============
+//============== 2. БИЛДИРҮҮЛӨР (TOAST & CONFIRM) =============
 window.showToast = (message, type = "info") => {
     let container = document.getElementById('toast-box');
     if (!container) {
@@ -51,13 +51,13 @@ window.showToast = (message, type = "info") => {
 window.askConfirm = (text, onConfirm) => {
     const overlay = document.createElement('div');
     overlay.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 20000;`;
-    overlay.innerHTML = `<div style="background: #1a1a1a; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1);"><h3 style="margin: 0 0 15px 0;">Ырастоо</h3><p style="opacity: 0.8; font-size: 14px;">${text}</p><div style="display: flex; gap: 10px; margin-top: 20px;"><button id="m-cancel" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-weight: bold;">Жок</button><button id="m-ok" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: #6366f1; color: white; font-weight: bold;">Ооба</button></div></div>`;
+    overlay.innerHTML = `<div style="background: #1a1a1a; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1);"><h3 style="margin: 0 0 15px 0;">Ырастоо</h3><p style="opacity: 0.8; font-size: 14px;">${text}</p><div style="display: flex; gap: 10px; margin-top: 20px;"><button id="m-cancel" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-weight: bold;">Жок</button><button id="m-ok" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: #ff416c; color: white; font-weight: bold;">Ооба</button></div></div>`;
     document.body.appendChild(overlay);
     document.getElementById('m-cancel').onclick = () => overlay.remove();
     document.getElementById('m-ok').onclick = () => { onConfirm(); overlay.remove(); };
 };
 
-// --- 3. КИНОЛОРДУ ЖҮКТӨӨ ЖАНА СВАЙП ---
+// --- 3. КИНОЛОРДУ ЖҮКТӨӨ ЖАНА СВАЙП ЛОГИКАСЫ ---
 function initMovies() {
     onSnapshot(collection(db, "movies"), (snap) => {
         const main = document.getElementById('main-movie-grid');
@@ -76,7 +76,7 @@ function initMovies() {
             else { if(soon) soon.innerHTML += html; }
 
             adminHtml += `
-                <div style="position:relative; overflow:hidden; border-radius:12px; background:#ff416c; height:60px;">
+                <div style="position:relative; overflow:hidden; border-radius:12px; background:#ff416c; height:60px; margin-bottom:8px;">
                     <div id="item-${id}" onclick="toggleSwipe('${id}')" style="display:flex; align-items:center; justify-content:space-between; background:#1a1a1a; padding:0 15px; position:relative; z-index:2; transition:transform 0.3s ease; height:100%; border:1px solid rgba(255,255,255,0.05); border-radius:12px;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <img src="${m.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
@@ -87,94 +87,39 @@ function initMovies() {
                         </div>
                         <span class="material-icons-round" style="color:rgba(255,255,255,0.2);">chevron_left</span>
                     </div>
-                    <div onclick="deleteMovie('${id}')" style="position:absolute; right:0; top:0; bottom:0; width:80px; background:#ff416c; color:white; display:flex; align-items:center; justify-content:center; z-index:1;">
+                    <div onclick="deleteMovie('${id}')" style="position:absolute; right:0; top:0; bottom:0; width:80px; background:#ff416c; color:white; display:flex; align-items:center; justify-content:center; z-index:1; cursor:pointer;">
                         <span class="material-icons-round">delete_outline</span>
                     </div>
                 </div>`;
             
-            // Свайпты ишке киргизүү
             setTimeout(() => initSwipeLogic(id), 100);
         });
         if(adminTabMovies) adminTabMovies.innerHTML = adminHtml + `</div>`;
     });
 }
 
-// Свайп логикасы (сен сураган нерсе)
 function initSwipeLogic(id) {
     const el = document.getElementById(`item-${id}`);
     if (!el) return;
     let startX = 0;
-
-    el.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-    }, {passive: true});
-
+    el.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, {passive: true});
     el.addEventListener('touchmove', (e) => {
-        let moveX = e.touches[0].clientX;
-        let diff = startX - moveX;
-        if (diff > 0 && diff <= 80) {
-            el.style.transform = `translateX(-${diff}px)`;
-        }
+        let diff = startX - e.touches[0].clientX;
+        if (diff > 0 && diff <= 80) el.style.transform = `translateX(-${diff}px)`;
     }, {passive: true});
-
     el.addEventListener('touchend', (e) => {
-        let endX = e.changedTouches[0].clientX;
-        if (startX - endX > 40) {
-            el.style.transform = `translateX(-80px)`; // Солго ачылат
-        } else {
-            el.style.transform = `translateX(0)`; // Жабылат
-        }
+        if (startX - e.changedTouches[0].clientX > 40) el.style.transform = `translateX(-80px)`;
+        else el.style.transform = `translateX(0)`;
     });
 }
 
 window.toggleSwipe = (id) => {
     const el = document.getElementById(`item-${id}`);
     if(!el) return;
-    const isSwiped = el.style.transform === 'translateX(-80px)';
-    el.style.transform = isSwiped ? 'translateX(0)' : 'translateX(-80px)';
+    el.style.transform = (el.style.transform === 'translateX(-80px)') ? 'translateX(0)' : 'translateX(-80px)';
 };
 
-// Өчүрүү (X иштебей жаткан жер)
-window.deleteMovie = (id) => {
-    window.askConfirm("Бул кинону өчүрөсүзбү?", async () => {
-        try {
-            await deleteDoc(doc(db, "movies", id));
-            window.showToast("Өчүрүлдү", "success");
-        } catch (e) {
-            window.showToast("Ката кетти!", "error");
-        }
-    });
-};
-
-// Кино кошуу (Админкадагы баскыч)
-window.handleAddMovie = async () => {
-    const title = document.getElementById('new-movie-title').value;
-    const category = document.getElementById('new-movie-category').value;
-    const file = document.getElementById('movie-file-input')?.files[0];
-    
-    if (!title || !file) return window.showToast("Толук толтуруңуз!", "error");
-    
-    try {
-        window.showToast("Жүктөлүүдө...", "info");
-        const url = await uploadToImgBB(file);
-        await addDoc(collection(db, "movies"), { title, category, image: url });
-        window.showToast("Ийгиликтүү кошулду!", "success");
-        document.getElementById('add-movie-modal').style.display = 'none';
-    } catch (e) {
-        window.showToast("Жүктөөдө ката кетти", "error");
-    }
-};
-
-// Калган логикалар (Авторизация ж.б. өзгөртүүсүз калды)
-window.handleBookingClick = (title) => {
-    if(!auth.currentUser) {
-        window.showToast("Билет алуу үчүн катталыңыз!", "info");
-        window.switchSection('profile-section');
-    } else {
-        window.openBooking(title);
-    }
-};
-
+// --- 4. АВТОРИЗАЦИЯ ЖАНА ПРОФИЛЬ ---
 onAuthStateChanged(auth, (user) => {
     const navItem = document.querySelector('[data-target="profile-section"]');
     if (user) {
@@ -207,79 +152,32 @@ window.handleRegister = async () => {
     const name = document.getElementById('reg-name-input').value;
     const email = document.getElementById('reg-email-input').value;
     const pass = document.getElementById('reg-pass-input').value;
+    if(!name || pass.length < 6) return window.showToast("Маалыматты толук толтуруңуз!", "error");
     try {
         const res = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(res.user, { displayName: name });
         window.showToast("Катталдыңыз!", "success");
-    } catch (err) { window.showToast("Ката кетти!", "error"); }
+    } catch { window.showToast("Каттоодо ката кетти!", "error"); }
 };
 
-window.handleResetPass = async () => {
-    const email = document.getElementById('reset-email-input').value;
-    try {
-        await sendPasswordResetEmail(auth, email);
-        window.showToast("Шилтеме почтага кетти", "success");
-        window.showAuthScreen('login-screen');
-    } catch { window.showToast("Email табылган жок", "error"); }
-};
-
-function initUserTickets(uid) {
-    onSnapshot(collection(db, "user_tickets"), (snap) => {
-        const list = document.getElementById('user-tickets-list');
-        if(!list) return; list.innerHTML = "";
-        snap.forEach(docSnap => {
-            const t = docSnap.data();
-            if(t.userId === uid) {
-                const isApproved = t.status === 'approved';
-                list.innerHTML += `<div style="margin: 10px 0; background:white; border-radius:15px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="color:#1a1a1a"><h4>${t.movieTitle}</h4><small>${t.status}</small></div>
-                    <div id="qr-${docSnap.id}"></div>
-                </div>`;
-                if(isApproved) setTimeout(() => new QRCode(document.getElementById(`qr-${docSnap.id}`), { text: docSnap.id, width: 60, height: 60 }), 100);
-            }
-        });
-    });
-}
-
-function initAdminTickets() {
-    onSnapshot(collection(db, "user_tickets"), (snap) => {
-        const adminList = document.getElementById('admin-tickets-list');
-        if(!adminList) return; adminList.innerHTML = "";
-        snap.forEach(docSnap => {
-            const t = docSnap.data();
-            if(t.status === 'pending') {
-                adminList.innerHTML += `<div class="glass-card" style="padding:15px; margin-bottom:10px;">
-                    <b>${t.movieTitle}</b><br><small>${t.userName}</small>
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="glass-btn" onclick="approveTicket('${docSnap.id}')">Ырастоо</button>
-                        <a href="${t.checkImg}" target="_blank" class="glass-btn">Чек</a>
-                    </div>
-                </div>`;
-            }
-        });
-    });
-}
-
-window.approveTicket = (id) => updateDoc(doc(db, "user_tickets", id), { status: "approved" }).then(() => window.showToast("Ырасталды", "success"));
-
-window.switchSection = (targetId) => {
-    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-    document.getElementById(targetId).style.display = 'block';
-    document.querySelectorAll('.nav-item').forEach(nav => {
-        nav.classList.remove('active');
-        if (nav.getAttribute('data-target') === targetId) nav.classList.add('active');
-    });
-};
-
-window.openBooking = (title) => {
-    document.getElementById('selected-movie-name').innerText = title;
-    document.getElementById('booking-modal').style.display = 'flex';
+// --- 5. БИЛЕТТЕР ЖАНА БРОНДОО ---
+window.handleBookingClick = (title) => {
+    if(!auth.currentUser) {
+        window.showToast("Билет алуу үчүн профиль бөлүмүнөн катталыңыз!", "info");
+        window.switchSection('profile-section');
+    } else {
+        document.getElementById('selected-movie-name').innerText = title;
+        document.getElementById('booking-modal').style.display = 'flex';
+        document.getElementById('modal-slider').style.transform = "translateX(0)";
+    }
 };
 
 window.handlePaymentSubmit = async () => {
     const file = document.getElementById('check-file-input').files[0];
-    if(!file) return window.showToast("Чегин жүктөңүз!", "error");
+    const btn = document.getElementById('final-confirm-btn');
+    if(!file) return window.showToast("Чекти жүктөңүз!", "error");
     try {
+        btn.innerText = "Жөнөтүлүүдө..."; btn.disabled = true;
         const url = await uploadToImgBB(file);
         await addDoc(collection(db, "user_tickets"), {
             userId: auth.currentUser.uid,
@@ -291,9 +189,145 @@ window.handlePaymentSubmit = async () => {
             status: "pending",
             createdAt: serverTimestamp()
         });
-        window.showToast("Жөнөтүлдү!", "success");
+        window.showToast("Ийгиликтүү жөнөтүлдү!", "success");
         document.getElementById('booking-modal').style.display = 'none';
-    } catch { window.showToast("Ката!", "error"); }
+    } catch { window.showToast("Ката кетти!", "error"); }
+    finally { btn.innerText = "Ырастоо"; btn.disabled = false; }
+};
+
+function initUserTickets(uid) {
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
+        const list = document.getElementById('user-tickets-list');
+        if(!list) return; list.innerHTML = "";
+        snap.forEach(docSnap => {
+            const t = docSnap.data();
+            if(t.userId === uid) {
+                const isApproved = t.status === 'approved';
+                const isScanned = t.status === 'scanned';
+                list.innerHTML += `<div style="margin: 15px 0; background:white; border-radius:18px; padding:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 15px rgba(0,0,0,0.1); ${isScanned ? 'opacity:0.5' : ''}">
+                    <div style="color:#1a1a1a">
+                        <h4 style="margin:0">${t.movieTitle}</h4>
+                        <small style="color:${isApproved ? 'green' : (isScanned ? 'gray' : 'orange')}">
+                            ${isScanned ? 'Колдонулган' : (isApproved ? 'Ырасталган (QR даяр)' : 'Күтүүдө')}
+                        </small>
+                    </div>
+                    <div id="qr-${docSnap.id}"></div>
+                </div>`;
+                if(isApproved) {
+                    setTimeout(() => {
+                        const qrContainer = document.getElementById(`qr-${docSnap.id}`);
+                        if(qrContainer) {
+                            qrContainer.innerHTML = "";
+                            new QRCode(qrContainer, { text: docSnap.id, width: 65, height: 65 });
+                        }
+                    }, 200);
+                }
+            }
+        });
+    });
+}
+
+// --- 6. АДМИН ПАНЕЛЬ ---
+window.handleAddMovie = async () => {
+    const title = document.getElementById('new-movie-title').value;
+    const category = document.getElementById('new-movie-category').value;
+    const file = document.getElementById('movie-file-input')?.files[0];
+    if(!title || !file) return window.showToast("Толук толтуруңуз!", "error");
+    try {
+        window.showToast("Кино жүктөлүүдө...", "info");
+        const url = await uploadToImgBB(file);
+        await addDoc(collection(db, "movies"), { title, category, image: url });
+        window.showToast("Кино кошулду!", "success");
+        document.getElementById('add-movie-modal').style.display = 'none';
+    } catch { window.showToast("Ката кетти!", "error"); }
+};
+
+window.deleteMovie = (id) => {
+    window.askConfirm("Бул кинону өчүрөсүзбү?", async () => {
+        try { await deleteDoc(doc(db, "movies", id)); window.showToast("Өчүрүлдү", "success"); }
+        catch { window.showToast("Ката кетти!", "error"); }
+    });
+};
+
+function initAdminTickets() {
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
+        const adminList = document.getElementById('admin-tickets-list');
+        if(!adminList) return; adminList.innerHTML = "";
+        snap.forEach(docSnap => {
+            const t = docSnap.data();
+            if(t.status === 'pending') {
+                adminList.innerHTML += `<div class="glass-card" style="padding:15px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1);">
+                    <b style="color:#00d2ff">${t.movieTitle}</b><br><small>${t.userName} (${t.userPhone})</small>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="glass-btn" style="background:#00ff88; color:black" onclick="approveTicket('${docSnap.id}')">Ырастоо</button>
+                        <a href="${t.checkImg}" target="_blank" class="glass-btn" style="text-decoration:none; background:rgba(255,255,255,0.1)">Чекти көрүү</a>
+                    </div>
+                </div>`;
+            }
+        });
+    });
+}
+
+window.approveTicket = (id) => updateDoc(doc(db, "user_tickets", id), { status: "approved" }).then(() => window.showToast("Билет ырасталып, колдонуучуга QR кетти!", "success"));
+
+// --- 7. QR SCANNER ---
+async function startScanner() {
+    if (scannerInitialized) return;
+    const readerElement = document.getElementById("reader");
+    if (!readerElement) return;
+
+    html5QrCode = new Html5Qrcode("reader");
+
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            async (code) => {
+                if (isScanning) return;
+                isScanning = true;
+
+                try {
+                    const ticketRef = doc(db, "user_tickets", code);
+                    const snap = await getDoc(ticketRef);
+
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (data.status === "approved") {
+                            await updateDoc(ticketRef, { status: "scanned" });
+                            window.showToast("ИЙГИЛИКТҮҮ: Билет кабыл алынды!", "success");
+                        } else {
+                            window.showToast("КАТА: Билет мурда колдонулган же жараксыз!", "error");
+                        }
+                    } else {
+                        window.showToast("КАТА: Билет табылган жок!", "error");
+                    }
+                } catch (err) {
+                    window.showToast("Базадан табууда ката кетти!", "error");
+                }
+                setTimeout(() => { isScanning = false; }, 3000);
+            },
+            (errorMessage) => {}
+        );
+        scannerInitialized = true;
+    } catch (err) {
+        window.showToast("Камерага уруксат бериңиз!", "error");
+    }
+}
+
+// --- 8. КОШУМЧА ЖАРДАМЧЫЛАР ---
+window.switchSection = (targetId) => {
+    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+    document.getElementById(targetId).style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+        if (nav.getAttribute('data-target') === targetId) nav.classList.add('active');
+    });
+};
+
+window.switchAdminTab = (tab) => {
+    document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-'+tab).style.display = 'block';
+    if(tab === 'scanner') startScanner();
 };
 
 async function uploadToImgBB(file) {
@@ -304,17 +338,21 @@ async function uploadToImgBB(file) {
     return data.data.url;
 }
 
-window.switchAdminTab = (tab) => {
-    document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
-    document.getElementById('tab-'+tab).style.display = 'block';
-};
-
+// --- 9. DOM ОКУЯЛАРЫ ---
 window.addEventListener('DOMContentLoaded', () => {
     initMovies();
-    document.getElementById('login-action-btn').onclick = window.handleLogin;
-    document.getElementById('reg-action-btn').onclick = window.handleRegister;
-    document.getElementById('reset-pass-btn').onclick = window.handleResetPass;
-    document.getElementById('upload-movie-btn').onclick = window.handleAddMovie;
+    
+    // Элементтер бар экенин текшерип анан ивент байлайбыз
+    const loginBtn = document.getElementById('login-action-btn');
+    if(loginBtn) loginBtn.onclick = window.handleLogin;
+
+    const regBtn = document.getElementById('reg-action-btn');
+    if(regBtn) regBtn.onclick = window.handleRegister;
+
+    const uploadBtn = document.getElementById('upload-movie-btn');
+    if(uploadBtn) uploadBtn.onclick = window.handleAddMovie;
+
     document.querySelectorAll('.logout-btn').forEach(b => b.onclick = () => signOut(auth));
     document.querySelectorAll('.nav-item').forEach(n => n.onclick = () => window.switchSection(n.dataset.target));
 });
+    
