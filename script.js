@@ -1,14 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
     getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile 
+    createUserWithEmailAndPassword, signOut, updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, collection, addDoc, onSnapshot, 
     doc, serverTimestamp, updateDoc, getDoc, deleteDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. CONFIG ---
+// --- 1. CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyBNLp79nMRg1hdQVE74sOtc4IYO3yYI2dY",
     authDomain: "kino-a534f.firebaseapp.com",
@@ -29,148 +29,131 @@ let html5QrCode;
 let isScanning = false;
 let scannerInitialized = false;
 
-//============== 2. БИЛДИРҮҮЛӨР ЖАНА МОДАЛКАЛАРДЫ БАШКАРУУ =============
+//============== 2. TOAST & NAVIGATION =============
 
-// Toast билдирүү
 window.showToast = (message, type = "info") => {
     let container = document.getElementById('toast-box');
     if (!container) {
         container = document.createElement('div');
         container.id = 'toast-box';
-        container.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20001; display: flex; flex-direction: column; align-items: center; width: 90%; pointer-events: none;`;
+        container.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 30000; display: flex; flex-direction: column; align-items: center; width: 90%; pointer-events: none;`;
         document.body.appendChild(container);
     }
     const toast = document.createElement('div');
     const colors = { success: "#00ff88", error: "#ff416c", info: "#00d2ff" };
-    const icons = { success: "check_circle", error: "error", info: "info" };
-    toast.style.cssText = `background: rgba(25, 25, 25, 0.9); backdrop-filter: blur(15px); color: white; padding: 14px 20px; border-radius: 12px; border-bottom: 3px solid ${colors[type]}; min-width: 280px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 10px; transition: all 0.4s ease; opacity: 0; transform: translateY(-20px); pointer-events: auto;`;
-    toast.innerHTML = `<span class="material-icons-round" style="color:${colors[type]}">${icons[type]}</span><span style="flex:1; font-size:14px; font-weight:500;">${message}</span>`;
+    toast.style.cssText = `background: rgba(25, 25, 25, 0.9); backdrop-filter: blur(15px); color: white; padding: 14px 20px; border-radius: 12px; border-bottom: 3px solid ${colors[type]}; min-width: 280px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 10px; transition: all 0.4s ease; opacity: 0; transform: translateY(-20px); pointer-events: auto; font-family: sans-serif;`;
+    toast.innerHTML = `<span class="material-icons-round" style="color:${colors[type]}">info</span><span style="flex:1; font-size:14px;">${message}</span>`;
     container.appendChild(toast);
     setTimeout(() => { toast.style.opacity = "1"; toast.style.transform = "translateY(0)"; }, 10);
     setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translateY(-10px)"; setTimeout(() => toast.remove(), 400); }, 3000);
 };
 
-// Модалканы жабуу функциясы (X баскычы үчүн)
-window.closeModal = (modalId) => {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        // Эгерде билет алуу модалкасы болсо, слайдерди баштапкы абалга келтиребиз
-        const slider = document.getElementById('modal-slider');
-        if (slider) slider.style.transform = "translateX(0)";
-    }
-};
-
-// Ырастоо терезеси (Ооба/Жок)
-window.askConfirm = (text, onConfirm) => {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 20000;`;
-    overlay.innerHTML = `
-        <div style="background: #1a1a1a; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1);">
-            <h3 style="margin: 0 0 15px 0;">Ырастоо</h3>
-            <p style="opacity: 0.8; font-size: 14px;">${text}</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button id="m-cancel" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; font-weight: bold;">Жок</button>
-                <button id="m-ok" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: #ff416c; color: white; font-weight: bold;">Ооба</button>
-            </div>
-        </div>`;
-    document.body.appendChild(overlay);
-    document.getElementById('m-cancel').onclick = () => overlay.remove();
-    document.getElementById('m-ok').onclick = () => { onConfirm(); overlay.remove(); };
-};
-
-// --- 3. КИНОЛОР ЖАНА СВАЙП ---
-function initMovies() {
-    onSnapshot(collection(db, "movies"), (snap) => {
-        const main = document.getElementById('main-movie-grid');
-        const soon = document.getElementById('soon-movie-grid');
-        const adminTabMovies = document.getElementById('tab-movies'); 
-        if(main) main.innerHTML = ""; if(soon) soon.innerHTML = "";
-        
-        let adminHtml = `<button class="btn-main" style="margin-bottom:20px; width:100%;" onclick="document.getElementById('add-movie-modal').style.display='flex'">+ Жаңы кино кошуу</button><div style="display:flex; flex-direction:column; gap:10px;">`;
-
-        snap.forEach(docSnap => {
-            const m = docSnap.data();
-            const id = docSnap.id;
-            
-            const movieCard = `
-                <div class="glass-card">
-                    <img src="${m.image}">
-                    <div class="glass-footer">
-                        <h3>${m.title}</h3>
-                        ${m.category === 'now' ? `<button class="glass-btn" onclick="handleBookingClick('${m.title}')">Билет алуу</button>` : `<span class="glass-date-tag">Жакында</span>`}
-                    </div>
-                </div>`;
-            
-            if(m.category === 'now') { if(main) main.innerHTML += movieCard; } 
-            else { if(soon) soon.innerHTML += movieCard; }
-
-            adminHtml += `
-                <div style="position:relative; overflow:hidden; border-radius:12px; background:#ff416c; height:60px; margin-bottom:8px;">
-                    <div id="item-${id}" onclick="toggleSwipe('${id}')" style="display:flex; align-items:center; justify-content:space-between; background:#1a1a1a; padding:0 15px; position:relative; z-index:2; transition:transform 0.3s ease; height:100%; border:1px solid rgba(255,255,255,0.05); border-radius:12px;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <img src="${m.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
-                            <div style="text-align:left;">
-                                <div style="color:white; font-weight:600; font-size:14px;">${m.title}</div>
-                                <div style="font-size:11px; color:gray;">${m.category === 'now' ? 'Прокатта' : 'Жакында'}</div>
-                            </div>
-                        </div>
-                        <span class="material-icons-round" style="color:rgba(255,255,255,0.2);">chevron_left</span>
-                    </div>
-                    <div onclick="deleteMovie('${id}')" style="position:absolute; right:0; top:0; bottom:0; width:80px; background:#ff416c; color:white; display:flex; align-items:center; justify-content:center; z-index:1; cursor:pointer;">
-                        <span class="material-icons-round">delete_outline</span>
-                    </div>
-                </div>`;
-            
-            setTimeout(() => initSwipeLogic(id), 100);
-        });
-        if(adminTabMovies) adminTabMovies.innerHTML = adminHtml + `</div>`;
+window.switchSection = (targetId) => {
+    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+    document.getElementById(targetId).style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.dataset.target === targetId);
     });
-}
-
-function initSwipeLogic(id) {
-    const el = document.getElementById(`item-${id}`);
-    if (!el) return;
-    let startX = 0;
-    el.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, {passive: true});
-    el.addEventListener('touchmove', (e) => {
-        let diff = startX - e.touches[0].clientX;
-        if (diff > 0 && diff <= 80) el.style.transform = `translateX(-${diff}px)`;
-    }, {passive: true});
-    el.addEventListener('touchend', (e) => {
-        if (startX - e.changedTouches[0].clientX > 40) el.style.transform = `translateX(-80px)`;
-        else el.style.transform = `translateX(0)`;
-    });
-}
-
-window.toggleSwipe = (id) => {
-    const el = document.getElementById(`item-${id}`);
-    if(!el) return;
-    el.style.transform = (el.style.transform === 'translateX(-80px)') ? 'translateX(0)' : 'translateX(-80px)';
 };
 
-// --- 4. БИЛЕТ АЛУУ ЖАНА КАДАМДАР (КИЙИНКИ БАСКЫЧЫ) ---
-window.handleBookingClick = (title) => {
-    if(!auth.currentUser) {
-        window.showToast("Билет алуу үчүн профиль бөлүмүнөн катталыңыз!", "info");
-        window.switchSection('profile-section');
-    } else {
-        document.getElementById('selected-movie-name').innerText = title;
-        document.getElementById('booking-modal').style.display = 'flex';
-        const slider = document.getElementById('modal-slider');
-        if (slider) slider.style.transform = "translateX(0)";
-    }
-};
+//============== 3. МОДАЛКАЛАРДЫ БАШКАРУУ =============
 
-// "Кийинки" баскычы үчүн функция
 window.goToStep2 = () => {
     const name = document.getElementById('user-name').value;
     const phone = document.getElementById('user-phone').value;
     if(!name || !phone) return window.showToast("Атыңызды жана номериңизди жазыңыз!", "error");
-    
-    const slider = document.getElementById('modal-slider');
-    if (slider) {
-        slider.style.transform = "translateX(-50%)"; // Экинчи кадамга (төлөмгө) өтүү
+    document.getElementById('modal-slider').style.transform = "translateX(-50%)";
+};
+
+window.goToStep1 = () => {
+    document.getElementById('modal-slider').style.transform = "translateX(0)";
+};
+
+window.closeBookingModal = () => {
+    document.getElementById('booking-modal').style.display = 'none';
+    window.goToStep1();
+};
+
+//============== 4. АВТОРИЗАЦИЯ (КИРҮҮ / КАТТАЛУУ) =============
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById('auth-ui').style.display = "none";
+        const isAdmin = user.email === ADMIN_EMAIL;
+        document.getElementById('admin-panel-ui').style.display = isAdmin ? "block" : "none";
+        document.getElementById('user-profile-ui').style.display = isAdmin ? "none" : "block";
+        document.getElementById('user-email-display').innerText = user.displayName || user.email;
+        if (isAdmin) initAdminTickets();
+        initUserTickets(user.uid);
+    } else {
+        document.getElementById('auth-ui').style.display = "block";
+        document.getElementById('admin-panel-ui').style.display = "none";
+        document.getElementById('user-profile-ui').style.display = "none";
+    }
+});
+
+window.handleLogin = async () => {
+    const e = document.getElementById('login-email-input').value.trim();
+    const p = document.getElementById('login-pass-input').value;
+    if(!e || !p) return window.showToast("Логин жана пароль толтуруңуз!", "error");
+    try { 
+        await signInWithEmailAndPassword(auth, e, p); 
+        window.showToast("Кош келиңиз!", "success"); 
+    } catch { window.showToast("Логин же пароль ката!", "error"); }
+};
+
+window.handleRegister = async () => {
+    const name = document.getElementById('reg-name-input').value.trim();
+    const email = document.getElementById('reg-email-input').value.trim();
+    const pass = document.getElementById('reg-pass-input').value;
+    if(!name || pass.length < 6) return window.showToast("Пароль кеминде 6 символ болушу керек!", "error");
+    try {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(res.user, { displayName: name });
+        window.showToast("Ийгиликтүү катталдыңыз!", "success");
+    } catch (err) { window.showToast("Катталуу катасы!", "error"); }
+};
+
+window.handleLogout = () => {
+    signOut(auth).then(() => window.showToast("Аккаунттан чыктыңыз", "info"));
+};
+
+//============== 5. КИНОЛОР ЖАНА БИЛЕТ АЛУУ =============
+
+function initMovies() {
+    onSnapshot(collection(db, "movies"), (snap) => {
+        const main = document.getElementById('main-movie-grid');
+        const soon = document.getElementById('soon-movie-grid');
+        const adminList = document.getElementById('tab-movies');
+        if(main) main.innerHTML = ""; if(soon) soon.innerHTML = "";
+        
+        let adminHtml = `<button class="btn-main" style="margin-bottom:20px; width:100%;" onclick="document.getElementById('add-movie-modal').style.display='flex'">+ Жаңы кино кошуу</button>`;
+
+        snap.forEach(docSnap => {
+            const m = docSnap.data();
+            const id = docSnap.id;
+            const card = `<div class="glass-card"><img src="${m.image}"><div class="glass-footer"><h3>${m.title}</h3>${m.category === 'now' ? `<button class="glass-btn" onclick="handleBookingClick('${m.title}')">Билет алуу</button>` : `<span class="glass-date-tag">Жакында</span>`}</div></div>`;
+            
+            if(m.category === 'now') main.innerHTML += card;
+            else soon.innerHTML += card;
+
+            adminHtml += `<div style="background:#1a1a1a; margin-bottom:8px; padding:10px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex; align-items:center; gap:10px;"><img src="${m.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"><span style="color:white; font-size:14px;">${m.title}</span></div>
+                <button onclick="deleteMovie('${id}')" style="background:none; border:none; color:#ff416c;"><span class="material-icons-round">delete</span></button>
+            </div>`;
+        });
+        if(adminList) adminList.innerHTML = adminHtml;
+    });
+}
+
+window.handleBookingClick = (title) => {
+    if(!auth.currentUser) {
+        window.showToast("Кириңиз же катталыңыз!", "info");
+        window.switchSection('profile-section');
+    } else {
+        document.getElementById('selected-movie-name').innerText = title;
+        document.getElementById('booking-modal').style.display = 'flex';
+        window.goToStep1();
     }
 };
 
@@ -178,7 +161,6 @@ window.handlePaymentSubmit = async () => {
     const file = document.getElementById('check-file-input').files[0];
     const btn = document.getElementById('final-confirm-btn');
     if(!file) return window.showToast("Төлөмдүн чегин жүктөңүз!", "error");
-    
     try {
         btn.innerText = "Жөнөтүлүүдө..."; btn.disabled = true;
         const url = await uploadToImgBB(file);
@@ -192,84 +174,161 @@ window.handlePaymentSubmit = async () => {
             status: "pending",
             createdAt: serverTimestamp()
         });
-        window.showToast("Билетке билдирме жөнөтүлдү!", "success");
-        window.closeModal('booking-modal');
-    } catch (e) { 
-        window.showToast("Ката кетти!", "error"); 
-    } finally { 
-        btn.innerText = "Ырастоо"; btn.disabled = false; 
-    }
+        window.showToast("Билдирме жөнөтүлдү!", "success");
+        window.closeBookingModal();
+    } catch { window.showToast("Жүктөө катасы!", "error"); }
+    finally { btn.innerText = "Ырастоо"; btn.disabled = false; }
 };
 
-// --- 5. АВТОРИЗАЦИЯ ---
-onAuthStateChanged(auth, (user) => {
-    const navItem = document.querySelector('[data-target="profile-section"]');
-    if (user) {
-        document.getElementById('auth-ui').style.display = "none";
-        const isAdmin = user.email === ADMIN_EMAIL;
-        document.getElementById('admin-panel-ui').style.display = isAdmin ? "block" : "none";
-        document.getElementById('user-profile-ui').style.display = isAdmin ? "none" : "block";
-        document.getElementById('user-email-display').innerText = user.displayName || user.email;
-        if (isAdmin && navItem) {
-            navItem.querySelector('.material-icons-round').innerText = "admin_panel_settings";
-            navItem.querySelector('span:not(.material-icons-round)').innerText = "Админ";
-            initAdminTickets();
-        }
-        initUserTickets(user.uid);
-    } else {
-        document.getElementById('auth-ui').style.display = "block";
-        document.getElementById('admin-panel-ui').style.display = "none";
-        document.getElementById('user-profile-ui').style.display = "none";
-    }
-});
+// ... (Жогорудагы Firebase Config жана башка функциялар өзгөрүүсүз калат) ...
 
-// Калган админ функциялары (Кино өчүрүү ж.б.)
-window.deleteMovie = (id) => {
-    window.askConfirm("Бул кинону өчүрөсүзбү?", async () => {
-        try { await deleteDoc(doc(db, "movies", id)); window.showToast("Кино өчүрүлдү", "success"); }
-        catch { window.showToast("Өчүрүүдө ката кетти", "error"); }
-    });
-};
+//============== 6. КИНОЛОРДУ ЧЫГАРУУ ЖАНА БИЛЕТТЕР (ЖАҢЫЛАНДЫ) =============
 
-window.handleAddMovie = async () => {
-    const title = document.getElementById('new-movie-title').value;
-    const category = document.getElementById('new-movie-category').value;
-    const file = document.getElementById('movie-file-input')?.files[0];
-    if(!title || !file) return window.showToast("Маалыматты толук толтуруңуз!", "error");
-    
-    try {
-        window.showToast("Кино жүктөлүүдө...", "info");
-        const url = await uploadToImgBB(file);
-        await addDoc(collection(db, "movies"), { title, category, image: url });
-        window.showToast("Жаңы кино кошулду!", "success");
-        window.closeModal('add-movie-modal');
-    } catch { window.showToast("Жүктөөдө ката кетти!", "error"); }
-};
-
-// --- 6. БИЛЕТТЕР ЖАНА QR ---
 function initUserTickets(uid) {
     onSnapshot(collection(db, "user_tickets"), (snap) => {
         const list = document.getElementById('user-tickets-list');
-        if(!list) return; list.innerHTML = "";
+        if (!list) return;
+        list.innerHTML = "";
+
         snap.forEach(docSnap => {
             const t = docSnap.data();
-            if(t.userId === uid) {
+            if (t.userId === uid) {
+                const id = docSnap.id;
                 const isApproved = t.status === 'approved';
                 const isScanned = t.status === 'scanned';
-                list.innerHTML += `
-                    <div style="margin: 15px 0; background:white; border-radius:18px; padding:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 15px rgba(0,0,0,0.1); ${isScanned ? 'opacity:0.5' : ''}">
-                        <div style="color:#1a1a1a">
-                            <h4 style="margin:0">${t.movieTitle}</h4>
-                            <small style="color:${isApproved ? 'green' : (isScanned ? 'gray' : 'orange')}">
-                                ${isScanned ? 'Колдонулган' : (isApproved ? 'Ырасталган (QR)' : 'Күтүүдө')}
-                            </small>
+
+                const statusData = {
+                    pending: { text: "Күтүүдө", color: "#ff9f43", icon: "schedule" },
+                    approved: { text: "Даяр", color: "#00d2ff", icon: "confirmation_number" },
+                    scanned: { text: "Колдонулган", color: "#8395a7", icon: "check_circle" }
+                };
+
+                const currentStatus = statusData[t.status] || statusData.pending;
+                const qrWidth = 105;
+
+                const mask = `radial-gradient(circle 12px at calc(100% - ${qrWidth}px) 0, transparent 100%, black 100%), 
+                              radial-gradient(circle 12px at calc(100% - ${qrWidth}px) 100%, transparent 100%, black 100%)`;
+
+                const ticketCard = document.createElement('div');
+                ticketCard.style.cssText = `
+                    position: relative;
+                    margin-bottom: 30px;
+                    filter: ${isScanned ? 'grayscale(1) opacity(0.6)' : 'none'};
+                    /* Скандалган болсо иштебейт */
+                    pointer-events: ${isScanned ? 'none' : 'auto'}; 
+                `;
+
+                ticketCard.innerHTML = `
+                    ${!isScanned ? `
+                        <div onclick="deleteTicket('${id}')" style="
+                            position: absolute;
+                            top: -10px;
+                            right: -10px;
+                            width: 25px;
+                            height: 25px;
+                            background: #ff4757;
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 14px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            z-index: 100;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                            border: 2px solid #1a1a1a;
+                        ">
+                            <span class="material-icons-round" style="font-size: 16px;">close</span>
                         </div>
-                        <div id="qr-${docSnap.id}"></div>
-                    </div>`;
-                if(isApproved) {
+                    ` : ''}
+
+                    <div style="
+                        display:flex;
+                        background:#1a1a1a;
+                        border-radius:20px;
+                        overflow:hidden;
+                        border:1px solid rgba(255,255,255,0.08);
+                        box-shadow:0 15px 35px rgba(0,0,0,0.45);
+                        -webkit-mask-image: ${mask};
+                        mask-image: ${mask};
+                        -webkit-mask-composite: source-over, source-over;
+                        mask-composite: intersect;
+                    ">
+                        
+                        <div style="flex:1; padding:20px; padding-right:25px; position:relative;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                                <span class="material-icons-round" style="color:${currentStatus.color}; font-size:18px;">
+                                    ${currentStatus.icon}
+                                </span>
+                                <span style="color:${currentStatus.color}; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">
+                                    ${currentStatus.text}
+                                </span>
+                            </div>
+
+                            <h2 style="color:white; margin:0 0 10px 0; font-size:18px; font-weight:800;">
+                                ${t.movieTitle}
+                            </h2>
+
+                            <div style="display:flex; gap:20px; margin-top:15px;">
+                                <div>
+                                    <p style="margin:0; font-size:9px; color:#555; text-transform:uppercase;">Билет ээси</p>
+                                    <p style="margin:2px 0; font-size:13px; color:#ddd; font-weight:600;">${t.userName}</p>
+                                </div>
+                                <div>
+                                    <p style="margin:0; font-size:9px; color:#555; text-transform:uppercase;">Саны</p>
+                                    <p style="margin:2px 0; font-size:13px; color:#ddd; font-weight:600;">${t.count} киши</p>
+                                </div>
+                            </div>
+
+                            <div style="
+                                position:absolute;
+                                right:0;
+                                top:15px;
+                                bottom:15px;
+                                width:1px;
+                                border-right:2px dashed rgba(255,255,255,0.15);
+                            "></div>
+                        </div>
+
+                        <div style="
+                            width:${qrWidth}px;
+                            flex-shrink:0;
+                            display:flex;
+                            flex-direction:column;
+                            align-items:center;
+                            justify-content:center;
+                            background:rgba(255,255,255,0.02);
+                            padding:10px;
+                        ">
+                            <div style="background:white; padding:6px; border-radius:10px;">
+                                ${isApproved ? 
+                                    `<div id="qr-${id}"></div>` :
+                                    `<div style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; color:#444; font-size:8px; text-align:center; font-weight:bold;">КҮТҮҮ...</div>`
+                                }
+                            </div>
+                            <p style="margin:8px 0 0 0; font-size:8px; color:#444; font-family:monospace;">
+                                #${id.slice(-6).toUpperCase()}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                list.appendChild(ticketCard);
+
+                if (isApproved) {
                     setTimeout(() => {
-                        const qrDiv = document.getElementById(`qr-${docSnap.id}`);
-                        if(qrDiv) { qrDiv.innerHTML = ""; new QRCode(qrDiv, { text: docSnap.id, width: 60, height: 60 }); }
+                        const qrElem = document.getElementById(`qr-${id}`);
+                        if (qrElem) {
+                            qrElem.innerHTML = "";
+                            new QRCode(qrElem, {
+                                text: id,
+                                width: 60,
+                                height: 60,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff"
+                            });
+                        }
                     }, 200);
                 }
             }
@@ -277,49 +336,86 @@ function initUserTickets(uid) {
     });
 }
 
-// Калган жардамчы функциялар
-window.switchSection = (targetId) => {
-    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-    const target = document.getElementById(targetId);
-    if (target) target.style.display = 'block';
-    document.querySelectorAll('.nav-item').forEach(nav => {
-        nav.classList.remove('active');
-        if (nav.getAttribute('data-target') === targetId) nav.classList.add('active');
-    });
-};
-
-async function uploadToImgBB(file) {
-    const formData = new FormData();
-    formData.append("image", file);
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-    const data = await res.json();
-    return data.data.url;
+// Билетти өчүрүү функциясы (мисал)
+function deleteTicket(ticketId) {
+    if(confirm("Билетти өчүрүүнү каалайсызбы?")) {
+        // Бул жерге Firebase өчүрүү кодун жазсаң болот:
+        // deleteDoc(doc(db, "user_tickets", ticketId));
+        console.log("Билет өчүрүлдү:", ticketId);
+    }
 }
 
-// Секцияларды алмаштыруу (Админ)
-window.switchAdminTab = (tab) => {
-    document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
-    document.getElementById('tab-'+tab).style.display = 'block';
-    if(tab === 'scanner') startScanner();
+
+
+
+
+
+
+
+                
+
+
+//============== 7. АДМИН ПАНЕЛЬ ЖАНА QR СКАННЕР =============
+
+function initAdminTickets() {
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
+        const adminList = document.getElementById('admin-tickets-list');
+        if(!adminList) return; adminList.innerHTML = "";
+        snap.forEach(docSnap => {
+            const t = docSnap.data();
+            if(t.status === 'pending') {
+                adminList.innerHTML += `<div class="glass-card" style="padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.02);">
+                    <b style="color:#00d2ff">${t.movieTitle}</b><br><small style="color:#ccc;">${t.userName} (${t.userPhone})</small>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="glass-btn" style="background:#00ff88; color:black; border:none;" onclick="approveTicket('${docSnap.id}')">Ырастоо</button>
+                        <a href="${t.checkImg}" target="_blank" class="glass-btn" style="background:rgba(255,255,255,0.1); text-decoration:none;">Чек көрүү</a>
+                    </div>
+                </div>`;
+            }
+        });
+    });
+}
+
+window.approveTicket = (id) => updateDoc(doc(db, "user_tickets", id), { status: "approved" });
+
+window.deleteMovie = async (id) => {
+    if(confirm("Өчүрөсүзбү?")) await deleteDoc(doc(db, "movies", id));
 };
 
-// DOMContentLoaded
-window.addEventListener('DOMContentLoaded', () => {
-    initMovies();
-    
-    // Жабуу (X) баскычтарын иштетүү
-    document.querySelectorAll('.close-modal').forEach(btn => {
-        btn.onclick = () => {
-            const modal = btn.closest('.modal-overlay');
-            if(modal) modal.style.display = 'none';
-        };
-    });
+window.handleAddMovie = async () => {
+    const title = document.getElementById('new-movie-title').value;
+    const cat = document.getElementById('new-movie-category').value;
+    const file = document.getElementById('movie-file-input').files[0];
+    if(!title || !file) return window.showToast("Толук толтуруңуз!", "error");
+    try {
+        const url = await uploadToImgBB(file);
+        await addDoc(collection(db, "movies"), { title, category: cat, image: url });
+        document.getElementById('add-movie-modal').style.display = 'none';
+        window.showToast("Жаңы кино кошулду!", "success");
+    } catch { window.showToast("Ката кетти!", "error"); }
+};
 
-    document.getElementById('login-action-btn').onclick = window.handleLogin;
-    document.getElementById('reg-action-btn').onclick = () => {
-        // Каттоо логикасы...
-    };
-    
-    document.querySelectorAll('.nav-item').forEach(n => n.onclick = () => window.switchSection(n.dataset.target));
-});
-    
+async function startScanner() {
+    if (scannerInitialized) return;
+    html5QrCode = new Html5Qrcode("reader");
+    try {
+        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, async (code) => {
+            if (isScanning) return;
+            isScanning = true;
+            const ref = doc(db, "user_tickets", code);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().status === "approved") {
+                await updateDoc(ref, { status: "scanned" });
+                window.showToast("ИЙГИЛИКТҮҮ: Билет кабыл алынды!", "success");
+            } else { window.showToast("КАТА: Билет жараксыз!", "error"); }
+            setTimeout(() => isScanning = false, 3000);
+        });
+        scannerInitialized = true;
+    } catch { window.showToast("Камера иштеген жок", "error"); }
+}
+
+window.switchAdminTab = (tab, event) => {
+    document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-'+tab).style.display = 'block';
+    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+    if(event) event.target.classList.add('active
