@@ -88,12 +88,21 @@
                 <div class="auth-subtitle">Жаңы аккаунт түзүңүз</div>
                 
                 <div class="input-group">
+                    <span class="input-label">Толук атыңыз</span>
+                    <div class="input-box">
+                        <span class="material-icons-round">person</span>
+                        <input type="text" id="reg-name-input" placeholder="Мисалы: Асан Усонов">
+                    </div>
+                </div>
+
+                <div class="input-group">
                     <span class="input-label">Email</span>
                     <div class="input-box">
                         <span class="material-icons-round">alternate_email</span>
                         <input type="email" id="reg-email-input" placeholder="Email дарегиңиз">
                     </div>
                 </div>
+
                 <div class="input-group">
                     <span class="input-label">Жаңы пароль</span>
                     <div class="input-box">
@@ -102,7 +111,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-main" id="reg-action-btn">Аккаунт түзүү</button>
+                <button class="btn-main" id="reg-action-btn">Катталуу</button>
                 
                 <button class="btn-secondary" onclick="showAuthScreen('login-screen')">
                     <span class="material-icons-round">arrow_back</span> Артка кайтуу
@@ -111,8 +120,8 @@
 
             <div id="reset-screen" class="auth-screen screen-left">
                 <div class="brand-icon"><span class="material-icons-round">key</span></div>
-                <div class="auth-title">Паролду унуттум</div>
-                <div class="auth-subtitle">Email дарегиңизге шилтеме жөнөтөбүз</div>
+                <div class="auth-title">Паролду калыбына келтирүү</div>
+                <div class="auth-subtitle">Электрондук почтаңызды жазыңыз</div>
                 
                 <div class="input-group">
                     <span class="input-label">Email дарегиңиз</span>
@@ -122,7 +131,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-main" id="reset-pass-btn">Жөнөтүү</button>
+                <button class="btn-main" id="reset-pass-btn">Шилтеме жөнөтүү</button>
                 
                 <button class="btn-secondary" onclick="showAuthScreen('login-screen')">
                     <span class="material-icons-round">arrow_back</span> Артка кайтуу
@@ -176,8 +185,7 @@
             </a>
         </nav>
     </div>
-    
-    
+
     <div class="waves-container">
         <svg class="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
             <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
@@ -237,7 +245,6 @@
     </div>
 
     <script>
-        // Экрандарды которуштуруу логикасы (Мурдагыдай)
         function showAuthScreen(screenId) {
             document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
