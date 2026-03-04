@@ -24,12 +24,11 @@ const db = getFirestore(app);
 const ADMIN_EMAIL = "cinematoktogul@gmail.com";
 const IMGBB_API_KEY = "B0e9710e452799f0de0e787b998c600d";
 
-// Сканер үчүн глобалдык өзгөрмөлөр (бир эле жолу жарыяланат)
 let html5QrCode;
 let isScanning = false;
 let scannerInitialized = false; 
 
-//============== 2. ЗАМАНБАП БИЛДИРҮҮЛӨР (Toast & Confirm) =============
+//============== 2. ЗАМАНБАП БИЛДИРҮҮЛӨР =============
 window.showToast = (message, type = "info") => {
     let container = document.getElementById('toast-box');
     if (!container) {
@@ -163,17 +162,9 @@ window.switchAdminTab = (tabName, event) => {
     document.querySelectorAll('.admin-tab-content').forEach(tab => tab.style.display = 'none');
     const targetTab = document.getElementById('tab-' + tabName);
     if(targetTab) targetTab.style.display = 'block';
-
     document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
-    }
-
-    if (tabName === 'scanner' && !scannerInitialized) {
-        setTimeout(() => {
-            startScanner();
-        }, 300);
-    }
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    if (tabName === 'scanner' && !scannerInitialized) setTimeout(() => startScanner(), 300);
 };
 
 window.handleAddMovie = async () => {
@@ -181,7 +172,6 @@ window.handleAddMovie = async () => {
     const category = document.getElementById('new-movie-category').value;
     const file = document.getElementById('movie-file-input')?.files[0];
     if (!title || !file) return window.showToast("Толук толтуруңуз!", "error");
-
     try {
         const url = await uploadToImgBB(file);
         await addDoc(collection(db, "movies"), { title, category, image: url });
@@ -239,95 +229,36 @@ function initData() {
         const soon = document.getElementById('soon-movie-grid');
         const adminMovies = document.getElementById('tab-movies'); 
         if(main) main.innerHTML = ""; if(soon) soon.innerHTML = "";
-        
         let adminHtml = `<button class="btn-main" style="margin-bottom:20px; width:100%;" onclick="document.getElementById('add-movie-modal').style.display='flex'">+ Жаңы кино кошуу</button><div style="display:flex; flex-direction:column; gap:10px;">`;
-
         snap.forEach(docSnap => {
             const m = docSnap.data();
             const id = docSnap.id;
             const html = `<div class="glass-card"><img src="${m.image}"><div class="glass-footer"><h3>${m.title}</h3>${m.category === 'now' ? `<button class="glass-btn" onclick="openBooking('${m.title}')">Билет алуу</button>` : `<span class="glass-date-tag">Жакында</span>`}</div></div>`;
             if(m.category === 'now') { if(main) main.innerHTML += html; } 
             else { if(soon) soon.innerHTML += html; }
-            
-            adminHtml += `
-            <div style="position:relative; overflow:hidden; border-radius:12px; background:#ff416c; height:60px;">
-                <div id="item-${id}" onclick="toggleSwipe('${id}')" style="display:flex; align-items:center; justify-content:space-between; background:#1a1a1a; padding:0 15px; position:relative; z-index:2; transition:transform 0.3s ease; height:100%; border:1px solid rgba(255,255,255,0.05); border-radius:12px;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <img src="${m.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
-                        <div style="text-align:left;"><div style="color:white; font-weight:600; font-size:14px;">${m.title}</div><div style="font-size:11px; color:gray;">${m.category === 'now' ? 'Прокатта' : 'Жакында'}</div></div>
-                    </div>
-                    <span class="material-icons-round" style="color:rgba(255,255,255,0.2);">chevron_left</span>
-                </div>
-                <div onclick="deleteMovie('${id}')" style="position:absolute; right:0; top:0; bottom:0; width:80px; background:#ff416c; color:white; display:flex; align-items:center; justify-content:center; z-index:1;"><span class="material-icons-round">delete_outline</span></div>
-            </div>`;
-            setTimeout(() => initSwipe(id), 100);
+            adminHtml += `<div style="position:relative; overflow:hidden; border-radius:12px; background:#ff416c; height:60px;"><div id="item-${id}" onclick="toggleSwipe('${id}')" style="display:flex; align-items:center; justify-content:space-between; background:#1a1a1a; padding:0 15px; position:relative; z-index:2; transition:transform 0.3s ease; height:100%; border:1px solid rgba(255,255,255,0.05); border-radius:12px;"><div style="display:flex; align-items:center; gap:12px;"><img src="${m.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"><div style="text-align:left;"><div style="color:white; font-weight:600; font-size:14px;">${m.title}</div><div style="font-size:11px; color:gray;">${m.category === 'now' ? 'Прокатта' : 'Жакында'}</div></div></div><span class="material-icons-round" style="color:rgba(255,255,255,0.2);">chevron_left</span></div><div onclick="deleteMovie('${id}')" style="position:absolute; right:0; top:0; bottom:0; width:80px; background:#ff416c; color:white; display:flex; align-items:center; justify-content:center; z-index:1;"><span class="material-icons-round">delete_outline</span></div></div>`;
+            setTimeout(() => window.initSwipe(id), 100);
         });
         if(adminMovies) adminMovies.innerHTML = adminHtml + `</div>`;
     });
 
-        onSnapshot(collection(db, "user_tickets"), (snap) => {
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
         const list = document.getElementById('user-tickets-list');
         if(!list) return; 
         list.innerHTML = "";
-
         snap.forEach(docSnap => {
             const t = docSnap.data();
             const id = docSnap.id;
-            
             if(t.userId === auth.currentUser?.uid) {
                 const isScanned = t.status === 'scanned';
                 const isApproved = t.status === 'approved';
-                
-                let statusName = "КҮТҮҮДӨ";
-                if (isApproved) statusName = "ЫРАСТАЛДЫ";
-                if (isScanned) statusName = "ЖАРАКСЫЗ";
-
+                let statusName = isScanned ? "ЖАРАКСЫЗ" : (isApproved ? "ЫРАСТАЛДЫ" : "КҮТҮҮДӨ");
                 const cardStyle = isScanned ? "filter: grayscale(0.5); opacity: 0.7;" : "";
-                
-                list.innerHTML += `
-                <div style="margin: 15px 0 10px 0; background:white; border-radius:18px; height:120px; display:flex; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1); ${cardStyle} transition: 0.3s;">
-                    
-                    <div onclick="deleteTicket('${id}')" 
-                        style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; 
-                        background: #ff416c; border-radius: 50%; display: flex; align-items: center; 
-                        justify-content: center; z-index: 20; cursor: pointer; border: 2px solid white;
-                        box-shadow: 0 2px 8px rgba(255, 65, 108, 0.4);">
-                        <span class="material-icons-round" style="font-size: 14px; color: white;">close</span>
-                    </div>
-
-                    <div style="flex:2; padding:12px 15px; color:#1a1a1a; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
-                        <div>
-                            <h2 style="margin:0; font-size:15px; font-weight:700; color:#1a1a1a; padding-right:15px; line-height:1.2;">${t.movieTitle}</h2>
-                            <div style="display:flex; align-items:center; gap:5px; margin-top:4px;">
-                                <span style="width:6px; height:6px; border-radius:50%; background:${isScanned ? '#555' : (isApproved ? '#00ff88' : '#ffb400')}"></span>
-                                <small style="color:${isScanned ? '#555' : (isApproved ? '#00ff88' : '#ffb400')}; font-weight:bold; font-size:10px;">
-                                    ${statusName}
-                                </small>
-                            </div>
-                        </div>
-                        <div style="font-size:10px; color:#666; font-weight:500;">
-                            ${t.userName} • ${t.count} билет
-                        </div>
-                    </div>
-
-                    <div style="flex:1; background:#1a1a1a; border-radius: 0 18px 18px 0; display:flex; align-items:center; justify-content:center; border-left: 2px dashed rgba(255,255,255,0.1);">
-                        ${isApproved ? `<div id="qr-${id}" style="background:white; padding:5px; border-radius:6px;"></div>` : ''}
-                        ${isScanned ? `<div style="color:white; opacity:0.3;"><span class="material-icons-round" style="font-size:30px;">no_photography</span></div>` : ''}
-                        ${t.status === 'pending' ? `<div style="text-align:center;"><span class="material-icons-round" style="color:white; opacity:0.5; font-size:24px; animation: pulse 1.5s infinite;">history</span><br><small style="color:white; opacity:0.5; font-size:8px;">Күтүүдө</small></div>` : ''}
-                    </div>
-                </div>`;
-
-                if(isApproved) {
-                    setTimeout(() => {
-                        new QRCode(document.getElementById(`qr-${id}`), {
-                            text: id, width: 65, height: 65, correctLevel : QRCode.CorrectLevel.H
-                        });
-                    }, 100);
-                }
+                list.innerHTML += `<div style="margin: 15px 0 10px 0; background:white; border-radius:18px; height:120px; display:flex; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1); ${cardStyle}"><div onclick="deleteTicket('${id}')" style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #ff416c; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 20; border: 2px solid white;"><span class="material-icons-round" style="font-size: 14px; color: white;">close</span></div><div style="flex:2; padding:12px 15px; color:#1a1a1a; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;"><div><h2 style="margin:0; font-size:15px; font-weight:700;">${t.movieTitle}</h2><div style="display:flex; align-items:center; gap:5px; margin-top:4px;"><span style="width:6px; height:6px; border-radius:50%; background:${isScanned ? '#555' : (isApproved ? '#00ff88' : '#ffb400')}"></span><small style="color:${isScanned ? '#555' : (isApproved ? '#00ff88' : '#ffb400')}; font-weight:bold; font-size:10px;">${statusName}</small></div></div><div style="font-size:10px; color:#666;">${t.userName} • ${t.count} билет</div></div><div style="flex:1; background:#1a1a1a; border-radius: 0 18px 18px 0; display:flex; align-items:center; justify-content:center; border-left: 2px dashed rgba(255,255,255,0.1);">${isApproved ? `<div id="qr-${id}" style="background:white; padding:5px; border-radius:6px;"></div>` : (isScanned ? `<span class="material-icons-round" style="color:white; opacity:0.3; font-size:30px;">no_photography</span>` : `<span class="material-icons-round" style="color:white; opacity:0.5; font-size:24px; animation: pulse 1.5s infinite;">history</span>`)}</div></div>`;
+                if(isApproved) setTimeout(() => { new QRCode(document.getElementById(`qr-${id}`), { text: id, width: 65, height: 65 }); }, 100);
             }
         });
     });
-
 }
 
 function initAdminPanel() {
@@ -337,52 +268,33 @@ function initAdminPanel() {
         snap.forEach(docSnap => {
             const t = docSnap.data();
             if(t.status === 'pending') {
-                adminList.innerHTML += `<div class="glass-card" style="margin-bottom:10px; padding:12px;">
-                    <b style="color:#00d2ff;">${t.movieTitle}</b><p style="font-size:12px; margin:5px 0;">${t.userName} (${t.userPhone})</p>
-                    <div style="display:flex; gap:8px;">
-                        <a href="${t.checkImg}" target="_blank" style="background:rgba(0,210,255,0.1); color:#00d2ff; padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none;">Чек</a>
-                        <button onclick="approveTicket('${docSnap.id}')" style="background:#00ff88; padding:5px 10px; border-radius:6px; font-size:11px; border:none; font-weight:bold;">Ырастоо</button>
-                        <button onclick="deleteTicket('${docSnap.id}')" style="background:#ff416c; color:white; padding:5px 10px; border-radius:6px; font-size:11px; border:none;">Өчүрүү</button>
-                    </div>
-                </div>`;
+                adminList.innerHTML += `<div class="glass-card" style="margin-bottom:10px; padding:12px;"><b style="color:#00d2ff;">${t.movieTitle}</b><p style="font-size:12px; margin:5px 0;">${t.userName} (${t.userPhone})</p><div style="display:flex; gap:8px;"><a href="${t.checkImg}" target="_blank" style="background:rgba(0,210,255,0.1); color:#00d2ff; padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none;">Чек</a><button onclick="approveTicket('${docSnap.id}')" style="background:#00ff88; padding:5px 10px; border-radius:6px; font-size:11px; border:none; font-weight:bold;">Ырастоо</button><button onclick="deleteTicket('${docSnap.id}')" style="background:#ff416c; color:white; padding:5px 10px; border-radius:6px; font-size:11px; border:none;">Өчүрүү</button></div></div>`;
             }
         });
     });
 }
 
-// --- 8. СКАНЕР ---
 async function startScanner() {
     if (scannerInitialized) return;
     html5QrCode = new Html5Qrcode("reader");
     try {
-        await html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
-            async (code) => {
-                if (isScanning) return;
-                isScanning = true;
-                try {
-                    const snap = await getDoc(doc(db, "user_tickets", code));
-                    if (snap.exists()) {
-                        if (snap.data().status === "scanned") {
-                            window.showToast("Мурда колдонулган!", "error");
-                        } else {
-                            await updateDoc(doc(db, "user_tickets", code), { status: "scanned" });
-                            window.showToast("Ийгиликтүү: " + snap.data().movieTitle, "success");
-                        }
-                    } else { window.showToast("Билет табылган жок!", "error"); }
-                } catch (err) { console.error(err); }
-                setTimeout(() => { isScanning = false; }, 2000);
-            },
-            () => {}
-        );
+        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, async (code) => {
+            if (isScanning) return;
+            isScanning = true;
+            try {
+                const snap = await getDoc(doc(db, "user_tickets", code));
+                if (snap.exists()) {
+                    if (snap.data().status === "scanned") window.showToast("Мурда колдонулган!", "error");
+                    else { await updateDoc(doc(db, "user_tickets", code), { status: "scanned" }); window.showToast("Ийгиликтүү: " + snap.data().movieTitle, "success"); }
+                } else window.showToast("Билет табылган жок!", "error");
+            } catch (err) { console.error(err); }
+            setTimeout(() => { isScanning = false; }, 2000);
+        }, () => {});
         scannerInitialized = true;
-    } catch (err) {
-        window.showToast("Камерага уруксат бериңиз", "error");
-    }
+    } catch (err) { window.showToast("Камерага уруксат бериңиз", "error"); }
 }
 
-window.onload = () => {
+window.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.onclick = () => window.switchSection(item.getAttribute('data-target'));
     });
@@ -397,6 +309,5 @@ window.onload = () => {
     }
     const uploadBtn = document.getElementById('upload-movie-btn');
     if(uploadBtn) uploadBtn.onclick = window.handleAddMovie;
-    
     document.querySelectorAll('.logout-btn').forEach(btn => btn.onclick = () => signOut(auth));
-};
+});
