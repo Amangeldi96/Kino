@@ -569,5 +569,117 @@ body {
 }
 
 
+/* Профиль контейнери */
+#user-profile-ui {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+/* Профиль картасы - Чыныгы айнек стили */
+.profile-card {
+    background: rgba(255, 255, 255, 0.1); /* Өтө тунук ак */
+    backdrop-filter: blur(20px) saturate(160%); /* Артындагы фонду бүдөмүк кылат */
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Жука айнек жээги */
+    border-radius: 28px;
+    padding: 35px 20px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Аватар - Сүрөттөгүдөй жумшак квадрат */
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #a78bfa, #f472b6); /* Жумшак градиент */
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 8px 20px rgba(167, 139, 250, 0.3);
+}
+
+.profile-avatar span {
+    font-size: 48px;
+    color: #ffffff !important;
+}
+
+#user-email-display {
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 600;
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+}
+
+/* ЧЫГУУ БАСКЫЧЫ - Сүрөттөгүдөй капсула жана тунук */
+.logout-btn-container {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 20px;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 50px; /* Толук капсула формасы */
+    background: rgba(255, 255, 255, 0.1); /* Тунук ак */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    color: #ffffff !important;
+    font-size: 17px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: underline; /* Сүрөттөгүдөй асты сызылган */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn span {
+    font-size: 22px;
+    color: #ffffff !important;
+}
+
+.logout-btn:active {
+    transform: scale(0.97);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Билеттер бөлүмүнүн аталышы */
+.tickets-header {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tickets-header::before {
+    content: '';
+    width: 4px;
+    height: 22px;
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+.tickets-header .m-title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 
