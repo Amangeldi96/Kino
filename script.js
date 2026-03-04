@@ -386,4 +386,4 @@ window.deleteTicket = async (id) => {
 };
 
 initMovies();
-                            
+    
