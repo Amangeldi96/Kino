@@ -26,6 +26,12 @@ body {
     color: white;
     overflow-x: hidden;
 }
+/* Кинолор жайгашкан негизги блок */
+.content-section {
+    padding-bottom: 120px !important; /* Навигация панелинин бийиктигинен бир аз көбүрөөк */
+    min-height: 100vh; /* Экрандын толук бийиктигин ээлеши үчүн */
+    box-sizing: border-box;
+}
 
 .no-scroll { overflow: hidden; height: 100vh; }
 
