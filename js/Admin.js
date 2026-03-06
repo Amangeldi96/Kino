@@ -210,8 +210,11 @@ function initMenuAdmin() {
 window.openAddMovieFs = () => {
     tempSessions = [];
     document.getElementById('added-sessions-preview').innerHTML = "";
+    // Инпутту баштапкы абалга келтирүү
+    document.getElementById('new-movie-title').value = "";
+    document.getElementById('movie-max-seats').value = "34"; 
     document.getElementById('add-movie-modal').style.display = 'flex';
-    window.selectCat('now', 'Азыр кинодо'); // Баштапкы абалга
+    window.selectCat('now', 'Азыр кинодо');
 };
 
 window.closeAddMovieFs = () => document.getElementById('add-movie-modal').style.display = 'none';
@@ -228,13 +231,18 @@ window.addSessionToList = () => {
 };
 
 window.handleAddMovie = async (event) => {
+    // Формадагы маалыматтарды алуу
     const title = document.getElementById('new-movie-title').value.trim();
+    const maxSeats = document.getElementById('movie-max-seats').value;
     const fileInput = document.getElementById('movie-file-input');
     const file = fileInput.files[0];
-    const btn = event ? event.target : document.querySelector('.btn-main');
+    
+    // Баскычты таап алуу (Жүктөө баскычы)
+    const btn = document.querySelector('#add-movie-modal .btn-main');
 
+    // Текшерүүлөр
     if (!title || !file) return showToast("Аты жана сүрөтү керек!", "error");
-
+    
     let releaseDate = "";
     if (selectedCat === 'now' && tempSessions.length === 0) return showToast("Сеанстарды кошуңуз!", "error");
     if (selectedCat === 'soon') {
@@ -243,47 +251,84 @@ window.handleAddMovie = async (event) => {
     }
 
     try {
-        btn.disabled = true; btn.innerText = "Жүктөлүүдө...";
+        // 1. Баскычты өчүрүү жана текстти алмаштыруу (Кайра-кайра басылбашы үчүн)
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+        btn.innerHTML = `<span style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                            Жүктөлүүдө... <i class="material-icons-round rotate">sync</i>
+                         </span>`;
         
-        const fd = new FormData(); fd.append("image", file);
+        // 2. Сүрөттү ImgBB серверине жүктөө
+        const fd = new FormData(); 
+        fd.append("image", file);
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
         const imgData = await res.json();
 
+        if (!imgData.success) throw new Error("Сүрөт жүктөлбөй калды");
+
+        // 3. Базага сактала турган объект
         const movieObj = { 
             title, 
             category: selectedCat, 
             image: imgData.data.url, 
+            maxSeats: Number(maxSeats) || 34, // Инпуттан алынган сан же автоматтык түрдө 34
             createdAt: serverTimestamp() 
         };
 
-        if (selectedCat === 'now') movieObj.sessions = tempSessions;
-        else { movieObj.releaseDate = releaseDate; movieObj.sessions = []; }
+        if (selectedCat === 'now') {
+            movieObj.sessions = tempSessions;
+        } else { 
+            movieObj.releaseDate = releaseDate; 
+            movieObj.sessions = []; 
+        }
 
+        // 4. Firestore базасына кошуу
         await addDoc(collection(db, "movies"), movieObj);
-        showToast("Кино ийгиликтүү кошулду!", "success");
+        
+        showToast("Тасма ийгиликтүү кошулду!", "success");
         closeAddMovieFs();
-    } catch (e) { showToast("Ката кетти!", "error"); }
-    finally { btn.disabled = false; btn.innerText = "Жүктөө"; }
+
+    } catch (e) { 
+        console.error(e);
+        showToast("Ката кетти! Кайра аракет кылыңыз.", "error"); 
+    } finally { 
+        // 5. Баскычты кайра активдештирүү
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerText = "Жүктөө"; 
+    }
 };
 
 function initMoviesAdmin() {
     onSnapshot(collection(db, "movies"), (snap) => {
         const list = document.getElementById('admin-movie-list');
-        if(!list) return; list.innerHTML = "";
+        if(!list) return; 
+        list.innerHTML = "";
         snap.forEach(d => {
             const m = d.data();
-            list.innerHTML += `<div style="display:flex; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; margin-bottom:8px; align-items:center;">
-                <img src="${m.image}" style="width:40px; height:55px; border-radius:5px; object-fit:cover;">
-                <div style="flex:1;"><div style="font-size:13px; font-weight:700;">${m.title}</div><div style="font-size:11px; opacity:0.5;">${m.category === 'now' ? 'Кинодо' : 'Жакында'}</div></div>
-                <button onclick="window.deleteMovie('${d.id}')" style="background:none; border:none; color:#ff4757;"><span class="material-icons-round">delete</span></button>
-            </div>`;
+            list.innerHTML += `
+                <div class="admin-movie-card" style="display:flex; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; margin-bottom:8px; align-items:center;">
+                    <img src="${m.image}" style="width:40px; height:55px; border-radius:5px; object-fit:cover;">
+                    <div style="flex:1;">
+                        <div style="font-size:13px; font-weight:700;">${m.title}</div>
+                        <div style="font-size:11px; opacity:0.5;">
+                            ${m.category === 'now' ? 'Кинодо' : 'Жакында'} | <span style="color:#00ffcc;">${m.maxSeats} орун</span>
+                        </div>
+                    </div>
+                    <button onclick="window.deleteMovie('${d.id}')" style="background:none; border:none; color:#ff4757;">
+                        <span class="material-icons-round">delete</span>
+                    </button>
+                </div>`;
         });
     });
 }
 
 window.deleteMovie = async (id) => {
-    if (await askConfirm("Өчүрүү", "Тасма өчүрүлсүнбү?")) { await deleteDoc(doc(db, "movies", id)); }
+    if (await askConfirm("Өчүрүү", "Тасма өчүрүлсүнбү?")) { 
+        await deleteDoc(doc(db, "movies", id)); 
+    }
 };
+
 
 // --- 7. БИЛЕТТЕРДИ БАШКАРУУ ---
 function initAdminTickets() {
