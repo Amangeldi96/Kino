@@ -68,15 +68,36 @@ window.askConfirm = (title, msg) => {
 
 // --- 3. UI БАШКАРУУ (ТАБТАР ЖАНА DROPDOWN) ---
 window.switchAdminTab = (id) => {
+    // Бардык табтарды жашыруу
     document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
+    
+    // Тандалган табды көрсөтүү
     const target = id === 'requests' ? 'tab-requests' : (id === 'movies' ? 'tab-movies' : 'tab-scanner');
-    document.getElementById(target).style.display = 'block';
+    const targetEl = document.getElementById(target);
+    if (targetEl) targetEl.style.display = 'block';
+    
+    // Навигациядагы активдүү классты алмаштыруу
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    if(document.getElementById('nav-'+id)) document.getElementById('nav-'+id).classList.add('active');
+    const activeNav = document.getElementById('nav-' + id);
+    if (activeNav) activeNav.classList.add('active');
+
+    // --- QR СКАНЕРДИ БАШКАРУУ ---
+    if (id === 'scanner') {
+        // Эгер "Сканер" табы тандалса, камераны иштетүү
+        if (typeof startQRScanner === "function") {
+            startQRScanner();
+        }
+    } else {
+        // Башка табга өткөндө камераны өчүрүү (ресурсту үнөмдөө үчүн)
+        if (typeof stopQRScanner === "function") {
+            stopQRScanner();
+        }
+    }
 };
 
 window.toggleDropdown = (id) => {
     const el = document.getElementById(id);
+    if (!el) return;
     const isOpen = el.style.display === 'block';
     document.querySelectorAll('.dropdown-options').forEach(d => d.style.display = 'none');
     el.style.display = isOpen ? 'none' : 'block';
@@ -84,9 +105,12 @@ window.toggleDropdown = (id) => {
 
 window.selectType = (val, label) => {
     selectedType = val;
-    document.getElementById('type-label').innerText = label;
-    document.getElementById('type-options').style.display = 'none';
+    const labelEl = document.getElementById('type-label');
+    const optionsEl = document.getElementById('type-options');
+    if (labelEl) labelEl.innerText = label;
+    if (optionsEl) optionsEl.style.display = 'none';
 };
+
 
 // КАТЕГОРИЯ ТАНДОО ЖАНА ИНПУТТАРДЫ АЛМАШТЫРУУ
 window.selectCat = (val, label) => {
@@ -318,3 +342,69 @@ window.deleteTicket = async (id) => {
 
 window.handleLogout = async () => { if(await askConfirm("Чыгуу", "Админ панелден чыгасызбы?")) { await signOut(auth); window.location.href="index.html"; } };
 window.goHome = () => window.location.href = "index.html";
+
+// --- 8. QR СКАНЕР ЛОГИКАСЫ ---
+let html5QrCode = null;
+
+window.startQRScanner = async () => {
+    const scannerContainer = document.getElementById('reader');
+    if (!scannerContainer) return;
+
+    html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" }, 
+            config, 
+            onScanSuccess
+        );
+    } catch (err) {
+        showToast("Камерага уруксат берилген жок!", "error");
+    }
+};
+
+window.stopQRScanner = async () => {
+    if (html5QrCode) {
+        try {
+            await html5QrCode.stop();
+            html5QrCode = null;
+        } catch (err) {
+            console.error("Scanner stop error:", err);
+        }
+    }
+};
+
+async function onScanSuccess(decodedText) {
+    // Сканерди убактылуу токтотуу (бир эле билетти бир нече жолу окубаш үчүн)
+    await stopQRScanner();
+    
+    try {
+        const ticketRef = doc(db, "user_tickets", decodedText);
+        const ticketSnap = await getDoc(ticketRef);
+
+        if (ticketSnap.exists()) {
+            const ticketData = ticketSnap.data();
+            
+            if (ticketData.status === 'approved') {
+                showToast("Бул билет мурун эле ырасталган! ⚠️", "error");
+            } else {
+                if (await askConfirm("Билетти ырастоо", `Кардар: ${ticketData.userName}. Ырастайсызбы?`)) {
+                    await updateDoc(ticketRef, { status: "approved" });
+                    showToast("Билет ийгиликтүү ырасталды! ✅", "success");
+                }
+            }
+        } else {
+            showToast("Мындай билет табылган жок! ❌", "error");
+        }
+    } catch (e) {
+        showToast("QR код туура эмес же ката кетти!", "error");
+    }
+
+    // Кайра сканерди иштетүү (кичине тыныгуудан кийин)
+    setTimeout(() => {
+        if (document.getElementById('tab-scanner').style.display === 'block') {
+            startQRScanner();
+        }
+    }, 2000);
+            }
