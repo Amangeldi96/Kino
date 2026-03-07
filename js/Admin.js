@@ -169,7 +169,7 @@ function initMenuAdmin() {
         
         // Тизмелерди тазалоо жана баш сөздөрүн кошуу
         foodList.innerHTML = `<h4 style="color: #94a3b8; margin: 15px 0 10px 5px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-round" style="font-size: 18px; color: #ec4899;">restaurant</span> Тамак-аштар</h4>`;
+            <span class="material-icons-round" style="font-size: 18px; color: #84CC16;">restaurant</span> Тамак-аштар</h4>`;
             
         drinkList.innerHTML = `<h4 style="color: #94a3b8; margin: 25px 0 10px 5px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
             <span class="material-icons-round" style="font-size: 18px; color: #0ea5e9;">local_bar</span> Суусундуктар</h4>`;
@@ -185,8 +185,8 @@ function initMenuAdmin() {
                         <div style="font-weight:700; font-size: 15px; color: #fff;">${item.name}</div>
                         <div style="color:#a855f7; font-size:13px; font-weight: 600; margin-top: 2px;">${item.price} сом</div>
                     </div>
-                    <button onclick="window.deleteMenuItem('${docSnap.id}', '${item.name}')" style="background:rgba(255,71,87,0.1); border:none; color:#ff4757; width:40px; height:40px; border-radius:12px; cursor:pointer; display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons-round" style="font-size:20px;">delete_outline</span>
+                    <button onclick="window.deleteMenuItem('${docSnap.id}', '${item.name}')" style="background:none; border:none; color:#06B6D4; width:40px; height:40px; border-radius:12px; cursor:pointer; display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons-round" style="font-size:20px;">delete</span>
                     </button>
                 </div>`;
             
@@ -315,7 +315,7 @@ function initMoviesAdmin() {
                             ${m.category === 'now' ? 'Кинодо' : 'Жакында'} | <span style="color:#00ffcc;">${m.maxSeats} орун</span>
                         </div>
                     </div>
-                    <button onclick="window.deleteMovie('${d.id}')" style="background:none; border:none; color:#ff4757;">
+                    <button onclick="window.deleteMovie('${d.id}')" style="background:none; border:none; color:#06B6D4;">
                         <span class="material-icons-round">delete</span>
                     </button>
                 </div>`;
@@ -452,4 +452,5 @@ async function onScanSuccess(decodedText) {
             startQRScanner();
         }
     }, 2000);
-}
+            }
+        
