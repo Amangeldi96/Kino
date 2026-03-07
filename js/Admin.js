@@ -330,81 +330,43 @@ window.deleteMovie = async (id) => {
 };
 
 
-// --- 7. БИЛЕТТЕРДИ БАШКАРУУ (Толук версия) ---
-function initAdminTickets() {
-    const list = document.getElementById('admin-tickets-list');
-    const approvedList = document.getElementById('approved-tickets-list');
+// --- БААРДЫК БАСКЫЧТАРДЫН ЛОГИКАСЫ ---
 
-    onSnapshot(collection(db, "user_tickets"), (snap) => {
-        if(!list) return;
-        list.innerHTML = ""; 
-        if(approvedList) approvedList.innerHTML = "";
-        
-        snap.forEach((d) => {
-            const t = d.data();
-            const ticketId = d.id;
-
-            // Орундарды жана киши санын эсептөө
-            const seatCount = t.selectedSeats ? t.selectedSeats.length : 0;
-            const seatsText = t.selectedSeats ? t.selectedSeats.join(', ') : 'Көрсөтүлгөн эмес';
-
-            let foodHTML = "";
-            if (t.selectedFood && t.selectedFood.length > 0) {
-                foodHTML = `<div style="margin: 10px 0; padding: 10px; background: rgba(168, 85, 247, 0.1); border-radius: 12px;">
-                    <div style="color: #a855f7; font-size: 11px; font-weight: 800; margin-bottom: 5px;">МЕНЮ:</div>
-                    ${t.selectedFood.map(f => `<div style="font-size:13px;">• ${f.name} x${f.count}</div>`).join('')}
-                </div>`;
-            }
-
-            // Статуска жараша баскычтар
-            let statusBtn = "";
-            if (t.status === 'pending') {
-                statusBtn = `<button onclick="window.approveTicket('${ticketId}')" style="width:100%; padding:12px; background:#a855f7; border:none; border-radius:12px; color:white; font-weight:800; cursor:pointer;">ЫРАСТОО (QR КҮЙГҮЗҮҮ)</button>`;
-            } else if (t.status === 'approved') {
-                statusBtn = `<div style="text-align:center; color:#FFD700; font-weight:800; padding:10px; border:1px dashed #FFD700; border-radius:12px;">ЫРАСТАЛДЫ (QR АКТИВДҮҮ) 📱</div>`;
-            } else if (t.status === 'checked-in') {
-                statusBtn = `<div style="text-align:center; color:#00ffcc; font-weight:800; padding:10px; background:rgba(0,255,204,0.1); border-radius:12px;">КОЛДОНУЛДУ (КИРДИ) ✅</div>`;
-            }
-
-            const ticketHTML = `
-                <div class="admin-ticket-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 20px; position: relative; border: 1px solid rgba(255,255,255,0.05);">
-                    <button onclick="window.deleteTicket('${ticketId}')" style="position: absolute; top: 10px; right: 10px; background:none; border:none; color:#ff4d4d; cursor:pointer;"><span class="material-icons-round">delete</span></button>
-                    
-                    <div style="font-weight: 800; font-size:16px;">${t.userName}</div>
-                    <div style="color: #7FFFD4; font-size: 14px;">${t.userPhone || '—'}</div>
-                    <hr style="opacity:0.1; margin:10px 0;">
-                    <div style="font-size: 13px; opacity:0.8; margin: 5px 0;"><b>Кино:</b> ${t.movieTitle}</div>
-                    <div style="font-size: 13px; color: #FFD700;"><b>Орундар (${seatCount} киши):</b> ${seatsText}</div>
-                    
-                    ${foodHTML}
-                    
-                    <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
-                        <span style="background:rgba(0,255,204,0.1); color:#00ffcc; padding:4px 8px; border-radius:8px; font-size:12px;">${t.sessionTime}</span>
-                        <span style="font-size:14px; font-weight:bold;">${t.totalPrice} сом</span>
-                    </div>
-
-                    <div style="margin-top:15px;">
-                        ${statusBtn}
-                    </div>
-                </div>`;
-
-            if(t.status === 'pending') list.innerHTML += ticketHTML;
-            else if(approvedList) approvedList.innerHTML += ticketHTML;
-        });
-    });
-}
-
-// Администратордук функциялар
-window.approveTicket = async (id) => {
-    try { 
-        await updateDoc(doc(db, "user_tickets", id), { status: "approved" }); 
-        showToast("Билет ырасталды!", "success"); 
-    } catch (e) { showToast("Ката кетти!", "error"); }
+// Чекти көрүү
+window.viewReceipt = (url) => {
+    if (!url || url === 'undefined') return window.showToast("Чек табылган жок!", "error");
+    const win = window.open("");
+    win.document.write(`
+        <body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center;">
+            <img src="${url}" style="max-width:100%; max-height:100vh; object-fit:contain;">
+        </body>
+    `);
 };
 
+// Билетти ырастоо
+window.approveTicket = async (id) => {
+    const ok = await window.askConfirm("Ырастоо", "Бул билетти ырастап, QR кодду активдештиресизби?");
+    if (!ok) return;
+
+    try {
+        const ticketRef = doc(db, "user_tickets", id);
+        await updateDoc(ticketRef, { status: "approved" });
+        window.showToast("Билет ийгиликтүү ырасталды!", "success");
+    } catch (e) {
+        window.showToast("Ката: " + e.message, "error");
+    }
+};
+
+// Билетти өчүрүү
 window.deleteTicket = async (id) => {
-    if(await askConfirm("Өчүрүү", "Билетти базадан өчүрөсүзбү?")) { 
-        await deleteDoc(doc(db, "user_tickets", id)); 
+    const ok = await window.askConfirm("Өчүрүү", "Бул билетти базадан биротоло өчүрөсүзбү?");
+    if (!ok) return;
+
+    try {
+        await deleteDoc(doc(db, "user_tickets", id));
+        window.showToast("Билет өчүрүлдү", "success");
+    } catch (e) {
+        window.showToast("Өчүрүүдө ката кетти", "error");
     }
 };
 
@@ -425,64 +387,90 @@ window.goHome = () => {
 };
 
 
-// --- 8. QR СКАНЕР ЛОГИКАСЫ ---
-let html5QrCode = null;
 
-window.startQRScanner = async () => {
-    const scannerContainer = document.getElementById('reader');
-    if (!scannerContainer) return;
 
-    html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 15, qrbox: { width: 250, height: 250 } };
+// --- 7. БИЛЕТТЕРДИ БАШКАРУУ (PREMIUM GLASS UI) ---
+function initAdminTickets() {
+    const list = document.getElementById('admin-tickets-list');
+    const approvedList = document.getElementById('approved-tickets-list');
+    const logoutBtnContainer = document.getElementById('logout-container');
 
-    try {
-        await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
-    } catch (err) {
-        showToast("Камера иштеген жок!", "error");
-    }
-};
-
-window.stopQRScanner = async () => {
-    if (html5QrCode) {
-        try {
-            await html5QrCode.stop();
-            html5QrCode = null;
-        } catch (e) { console.error(e); }
-    }
-};
-
-async function onScanSuccess(decodedText) {
-    if (html5QrCode) await html5QrCode.pause();
-    
-    try {
-        const ticketRef = doc(db, "user_tickets", decodedText);
-        const ticketSnap = await getDoc(ticketRef);
-
-        if (ticketSnap.exists()) {
-            const data = ticketSnap.data();
-            const seats = data.selectedSeats ? data.selectedSeats.length : 1;
-
-            if (data.status === 'checked-in') {
-                await Swal.fire("КАТА", "Бул билет колдонулуп бүткөн! ❌", "error");
-            } 
-            else if (data.status === 'approved') {
-                const confirm = await askConfirm("КИРҮҮГӨ УРУКСАТ", `Кардар: ${data.userName}\nОрундар: ${seats}\nКино: ${data.movieTitle}`);
-                if (confirm) {
-                    await updateDoc(ticketRef, { status: "checked-in" });
-                    showToast("Кирүү катталды! ✅", "success");
-                }
-            } 
-            else {
-                showToast("Билет али ырастала элек! ⚠️", "warning");
-            }
-        } else {
-            showToast("Табылбады!", "error");
-        }
-    } catch (e) {
-        showToast("QR ката!", "error");
+    // Чыгуу баскычын кошуу (эгер контейнер болсо)
+    if (logoutBtnContainer) {
+        logoutBtnContainer.innerHTML = `
+            <button onclick="window.adminLogout()" style="display:flex; align-items:center; gap:8px; padding:12px 24px; background:rgba(255,77,77,0.1); border:1px solid rgba(255,77,77,0.3); border-radius:15px; color:#ff4d4d; font-weight:800; cursor:pointer; transition:0.3s;">
+                <span class="material-icons-round">logout</span> ЧЫГУУ
+            </button>
+        `;
     }
 
-    setTimeout(async () => {
-        if (html5QrCode) await html5QrCode.resume();
-    }, 2500);
-}
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
+        if(!list) return;
+        list.innerHTML = ""; 
+        if(approvedList) approvedList.innerHTML = "";
+        
+        snap.forEach((d) => {
+            const t = d.data();
+            const ticketId = d.id;
+            const receiptUrl = t.checkImg || t.paymentImg || Object.values(t).find(v => typeof v === 'string' && v.startsWith('http'));
+
+         const ticketHTML = `
+<div class="ticket-card" style="
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    color: #fff;
+    animation: fadeIn .3s ease-out;
+">
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div style="background:#FFD700; width:3px; height:16px; border-radius:4px;"></div>
+            <span style="font-weight:800; font-size:14px; line-height:1.2; max-width:180px;">
+                ${t.movieTitle}
+            </span>
+        </div>
+        <button onclick="window.deleteTicket('${ticketId}')" style="
+            background: rgba(77,77,77,0.15);
+            border: none; color: #ffd700;
+            width: 26px; height: 26px;
+            border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        ">
+            <span class="material-icons-round" style="font-size:16px;">delete_outline</span>
+        </button>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px; padding:0 2px;">
+        <div>
+            <div style="font-size:10px; opacity:0.6; text-transform:uppercase; letter-spacing:0.5px;">Кардар</div>
+            <div style="font-size:13px; font-weight:700;">${t.userName || 'Аты жок'}</div>
+            <div style="font-size:12px; color:#00ffcc; font-weight:600; display:flex; align-items:center; gap:3px; margin-top:2px;">
+                <span class="material-icons-round" style="font-size:12px;">call</span>
+                ${t.userPhone || '—'}
+            </div>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.08); padding:4px 8px; border-radius:8px; display:flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,0.05);">
+            <span class="material-icons-round" style="color:#FFD700; font-size:13px;">schedule</span>
+            <span style="font-size:13px; font-weight:800;">${t.sessionTime}</span>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.2); padding:8px 10px; border-radius:12px;">
+        
+        <div style="display:flex; gap:10px;">
+            <div style="display:flex; align-items:center; gap:3px;">
+                <span class="material-icons-round" style="color:#FFD700; font-size:14px;">person</span>
+                <span style="font-size:13px; font-weight:700;">${t.adults || 0}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:3px;">
+                <span class="material-icons-round" style="color:#4ade80; font-size:14px;">child_care</span>
+                <span style="font-size:13px; font-weight:700;">${t.children || 0}</span>
+            </div>
+   
