@@ -81,67 +81,182 @@
     to { width: 0%; }
 }
 
-/* Чыгып кетүү анимациясы (JS аркылуу 'hide' классын кошкондо) */
-.toast.hide {
-    animation: toastFadeOut 0.4s ease forwards;
+/* ================= OVERLAY ================= */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(18px) saturate(160%);
+
+    z-index: 9999;
+
+    animation: fadeIn .35s ease;
 }
 
-@keyframes toastFadeOut {
-    to { 
-        transform: scale(0.8); 
-        opacity: 0; 
-        margin-top: -60px;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+/* ================= CARD ================= */
+.confirm-card {
+    width: 100%;
+    max-width: 360px;
+
+    padding: 12px 26px;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid rgba(0,0,0,.08);
+
+    box-shadow:
+        0 16px 40px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.6);
+
+    text-align: center;
+
+    animation: pop .4s cubic-bezier(.25,.8,.25,1);
+}
+
+@keyframes pop {
+    from {
+        opacity: 0;
+        transform: scale(.9) translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
-.swal2-popup {
-    border-radius: 20px !important; /* Бурчтарын жумшак кылат */
-    font-family: 'Inter', sans-serif; /* Заманбап шрифт */
-}
 
-.swal2-title {
-    font-size: 1.2rem !important; /* Текстти кичирейтет */
-    font-weight: 600;
-}
-
-.confirm-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 20000;
-}
-
-.confirm-card {
-    background: #1c2128;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 24px;
-    text-align: center;
-    width: 90%;
-    max-width: 350px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-
+/* ================= ICON ================= */
 .confirm-icon {
-    width: 60px; height: 60px;
-    background: rgba(255, 71, 87, 0.1);
-    color: #ff4757;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    width: 72px;
+    height: 72px;
+
     margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #4b9cff, #1f7aff);
+
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 22px rgba(30,120,255,.35),
+        0 0 14px rgba(30,120,255,.25);
+
+    transition: transform .25s ease;
 }
 
-.confirm-icon span { font-size: 32px; }
+.confirm-icon:hover {
+    transform: scale(1.08);
+}
 
+
+/* ================= TEXT ================= */
+.confirm-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
+
+    color: #000;
+
+    margin-bottom: 8px;
+}
+
+.confirm-text {
+    font-size: 15px;
+    color: #000;
+    line-height: 1.6;
+}
+
+.confirm-msg{
+    color: #000;
+}
+/* Ушул жерди жакшылап караңыз, 'confirm-msg' эми даана көрүнөт */
+#confirm-msg, .confirm-msg {
+    font-size: 15px;
+    color: #4a4a4a; /* Боз-кара түс */
+    line-height: 1.5;
+    margin-top: -30px;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* ================= BUTTONS ================= */
 .confirm-btns {
-    display: flex; gap: 12px; margin-top: 25px;
+    display: flex;
+    gap: 12px;
+    margin-top: 26px;
+    width: 100%;
 }
 
 .confirm-btns button {
-    flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;
+    flex: 1;
+    height: 46px;
+
+    border-radius: 12px;
+    border: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+    margin: 0;
+    line-height: normal;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    transition: all .25s ease;
 }
 
-.btn-secondary { background: rgba(255,255,255,0.05); color: white; }
-.btn-danger { background: #ff4757; color: white; }
+/* CANCEL */
+.btn-secondary {
+    background: rgba(0,0,0,0.05);
+    color: #333;
+}
+.btn-secondary:hover {
+    background: rgba(0,0,0,0.08);
+    color: #000;
+}
+
+/* YES */
+.btn-danger {
+    background: linear-gradient(135deg, #4b9cff, #1f7aff);
+    color: white;
+    box-shadow: 0 6px 16px rgba(30,120,255,0.25);
+}
+.btn-danger:hover {
+    background: linear-gradient(135deg, #5aa6ff, #2a85ff);
+    box-shadow: 0 8px 20px rgba(30,120,255,0.35);
+}
+
+/* CLICK EFFECT */
+.confirm-btns button:active {
+    transform: scale(.95);
+}
