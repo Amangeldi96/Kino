@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>Toktogul Cinema - Admin Panel</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
@@ -122,12 +121,14 @@
         </button>
     </nav>
 
-    <div id="add-movie-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <span class="close-modal material-icons-round" onclick="closeAddMovieFs()">close</span>
-            <h2 class="modal-title">Жаңы кино</h2>
-            
-            <div class="custom-dropdown" style="margin-bottom: 15px;">
+   <div id="add-movie-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal material-icons-round" onclick="closeAddMovieFs()">close</span>
+        <h2 class="modal-title">Жаңы кино</h2>
+        
+        <div class="input-group">
+            <span class="input-label">Категория</span>
+            <div class="custom-dropdown">
                 <div class="dropdown-trigger" onclick="toggleDropdown('cat-options')">
                     <span id="cat-label">Азыр кинодо</span>
                     <span class="material-icons-round">expand_more</span>
@@ -137,45 +138,64 @@
                     <div class="option" onclick="selectCat('soon', 'Жакында')">Жакында</div>
                 </div>
             </div>
-            
-            <input type="text" id="new-movie-title" placeholder="Кинонун аты" class="admin-input-small" style="width: 100%; margin-bottom: 15px;">
-            
-            <label for="movie-file-input" class="file-upload-label">
-    <span id="file-status-text">Сүрөт тандоо</span>
-</label>
-<input type="file" id="movie-file-input" accept="image/*" style="display: none;" 
-       onchange="document.getElementById('file-status-text').innerHTML='Тандалды ✅'; this.parentElement.style.borderColor='#00ffcc'">
+        </div>
+        
+        <div class="input-group">
+            <span class="input-label">Кинонун аты</span>
+            <div class="input-box">
+                <span class="material-icons-round">movie</span>
+                <input type="text" id="new-movie-title" placeholder="Мисалы: Аватар">
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="movie-file-input" class="file-upload-label" id="file-label-container">
+                <span class="material-icons-round">cloud_upload</span>
+                <span id="file-status-text">Сүрөт тандоо</span>
+            </label>
+            <input type="file" id="movie-file-input" accept="image/*" style="display: none;" 
+                   onchange="handleFileUpload(this)">
+        </div>
 
-            <div style="margin-top: 15px;"></div>
-
-            <div id="section-sessions-admin">
-                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">Сеанстар:</p>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <input type="time" id="session-time-input" class="admin-input-small" style="flex: 1.5;">
-                    <input type="number" id="session-price-input" placeholder="Баа" class="admin-input-small" style="flex: 1;">
-                    <button onclick="addSessionToList()" class="session-add-btn">
-                        <span class="material-icons-round">add</span>
-                    </button>
+        <div id="section-sessions-admin">
+            <span class="input-label">Сеанстар:</span>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <div class="input-box" style="flex: 1.5;">
+                    <span class="material-icons-round">schedule</span>
+                    <input type="time" id="session-time-input">
                 </div>
-                <div class="input-group">
-    <span class="input-label">Залдагы орун саны</span>
-    <div class="input-box">
-        <span class="material-icons-round">event_seat</span>
-        <input type="number" id="movie-max-seats" placeholder="Мисалы: 34" value="34">
+                <div class="input-box" style="flex: 1;">
+                    <input type="number" id="session-price-input" placeholder="Баа">
+                </div>
+                <button onclick="addSessionToList()" class="session-add-btn">
+                    <span class="material-icons-round">add</span>
+                </button>
+            </div>
+            
+            <div class="input-group">
+                <span class="input-label">Залдагы орун саны</span>
+                <div class="input-box">
+                    <span class="material-icons-round">event_seat</span>
+                    <input type="number" id="movie-max-seats" value="34">
+                </div>
+            </div>
+            <div id="added-sessions-preview" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+        </div>
+
+        <div id="section-date-admin" style="display: none;">
+            <div class="input-group">
+                <span class="input-label">Качан экранга чыгат:</span>
+                <div class="input-box">
+                    <span class="material-icons-round">calendar_today</span>
+                    <input type="date" id="movie-release-date">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-main" onclick="handleAddMovie()" style="width: 100%; padding: 15px; border-radius: 18px; font-weight: 800; margin-top: 20px;">Жүктөө</button>
     </div>
 </div>
 
-                <div id="added-sessions-preview" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
-            </div>
-
-            <div id="section-date-admin" style="display: none;">
-                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">Качан экранга чыгат:</p>
-                <input type="date" id="movie-release-date" class="admin-input-small" style="width: 100%;">
-            </div>
-
-            <button class="btn-main" onclick="handleAddMovie()" style="width: 100%; padding: 15px; border-radius: 18px; font-weight: 800; margin-top: 20px;">Жүктөө</button>
-        </div>
-    </div>
     
     <div id="custom-confirm" class="confirm-overlay" style="display: none;">
         <div class="confirm-card">
@@ -191,4 +211,5 @@
 
     <script type="module" src="js/Admin.js"></script>
 </body>
-</html>
+                                                                                            </html>
+                                                                                            
