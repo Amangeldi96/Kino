@@ -366,8 +366,11 @@
   box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
   transition: 0.3s;
   margin-top: 10px;
+  display: flex;
+  align-items: center;    
+  justify-content: center; 
+  gap: 8px;               
 }
-
 .btn-main:hover {
   transform: translateY(-3px);
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.5);
