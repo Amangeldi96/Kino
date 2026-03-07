@@ -398,7 +398,76 @@ window.approveTicket = async (id) => {
     try { 
         await updateDoc(doc(db, "user_tickets", id), { status: "approved" }); 
         showToast("Билет ырасталды! Кардарда QR-код чыкты.", "success"); 
-    } catch (e) { showToast("Ката!", "error"); }
+// --- 7. БИЛЕТТЕРДИ БАШКАРУУ (Толук версия) ---
+function initAdminTickets() {
+    const list = document.getElementById('admin-tickets-list');
+    const approvedList = document.getElementById('approved-tickets-list');
+
+    onSnapshot(collection(db, "user_tickets"), (snap) => {
+        if(!list) return;
+        list.innerHTML = ""; 
+        if(approvedList) approvedList.innerHTML = "";
+        
+        snap.forEach((d) => {
+            const t = d.data();
+            const ticketId = d.id;
+
+            // Орундарды жана киши санын эсептөө
+            const seatCount = t.selectedSeats ? t.selectedSeats.length : 0;
+            const seatsText = t.selectedSeats ? t.selectedSeats.join(', ') : 'Көрсөтүлгөн эмес';
+
+            let foodHTML = "";
+            if (t.selectedFood && t.selectedFood.length > 0) {
+                foodHTML = `<div style="margin: 10px 0; padding: 10px; background: rgba(168, 85, 247, 0.1); border-radius: 12px;">
+                    <div style="color: #a855f7; font-size: 11px; font-weight: 800; margin-bottom: 5px;">МЕНЮ:</div>
+                    ${t.selectedFood.map(f => `<div style="font-size:13px;">• ${f.name} x${f.count}</div>`).join('')}
+                </div>`;
+            }
+
+            // Статуска жараша баскычтар
+            let statusBtn = "";
+            if (t.status === 'pending') {
+                statusBtn = `<button onclick="window.approveTicket('${ticketId}')" style="width:100%; padding:12px; background:#a855f7; border:none; border-radius:12px; color:white; font-weight:800; cursor:pointer;">ЫРАСТОО (QR КҮЙГҮЗҮҮ)</button>`;
+            } else if (t.status === 'approved') {
+                statusBtn = `<div style="text-align:center; color:#FFD700; font-weight:800; padding:10px; border:1px dashed #FFD700; border-radius:12px;">ЫРАСТАЛДЫ (QR АКТИВДҮҮ) 📱</div>`;
+            } else if (t.status === 'checked-in') {
+                statusBtn = `<div style="text-align:center; color:#00ffcc; font-weight:800; padding:10px; background:rgba(0,255,204,0.1); border-radius:12px;">КОЛДОНУЛДУ (КИРДИ) ✅</div>`;
+            }
+
+            const ticketHTML = `
+                <div class="admin-ticket-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 20px; position: relative; border: 1px solid rgba(255,255,255,0.05);">
+                    <button onclick="window.deleteTicket('${ticketId}')" style="position: absolute; top: 10px; right: 10px; background:none; border:none; color:#ff4d4d; cursor:pointer;"><span class="material-icons-round">delete</span></button>
+                    
+                    <div style="font-weight: 800; font-size:16px;">${t.userName}</div>
+                    <div style="color: #7FFFD4; font-size: 14px;">${t.userPhone || '—'}</div>
+                    <hr style="opacity:0.1; margin:10px 0;">
+                    <div style="font-size: 13px; opacity:0.8; margin: 5px 0;"><b>Кино:</b> ${t.movieTitle}</div>
+                    <div style="font-size: 13px; color: #FFD700;"><b>Орундар (${seatCount} киши):</b> ${seatsText}</div>
+                    
+                    ${foodHTML}
+                    
+                    <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
+                        <span style="background:rgba(0,255,204,0.1); color:#00ffcc; padding:4px 8px; border-radius:8px; font-size:12px;">${t.sessionTime}</span>
+                        <span style="font-size:14px; font-weight:bold;">${t.totalPrice} сом</span>
+                    </div>
+
+                    <div style="margin-top:15px;">
+                        ${statusBtn}
+                    </div>
+                </div>`;
+
+            if(t.status === 'pending') list.innerHTML += ticketHTML;
+            else if(approvedList) approvedList.innerHTML += ticketHTML;
+        });
+    });
+}
+
+// Администратордук функциялар
+window.approveTicket = async (id) => {
+    try { 
+        await updateDoc(doc(db, "user_tickets", id), { status: "approved" }); 
+        showToast("Билет ырасталды!", "success"); 
+    } catch (e) { showToast("Ката кетти!", "error"); }
 };
 
 window.deleteTicket = async (id) => {
@@ -407,7 +476,24 @@ window.deleteTicket = async (id) => {
     }
 };
 
-// --- 8. QR СКАНЕР ЛОГИКАСЫ (Кирүүдө текшерүү) ---
+// --- ЧЫГУУ ЖАНА БАШКЫ БЕТКЕ ӨТҮҮ (Эми иштейт) ---
+window.handleLogout = async () => { 
+    if(await askConfirm("Чыгуу", "Админ панелден чыгасызбы?")) { 
+        try {
+            await signOut(auth); 
+            window.location.href = "index.html"; 
+        } catch (e) {
+            showToast("Чыгууда ката кетти", "error");
+        }
+    } 
+};
+
+window.goHome = () => {
+    window.location.href = "index.html";
+};
+
+
+// --- 8. QR СКАНЕР ЛОГИКАСЫ ---
 let html5QrCode = null;
 
 window.startQRScanner = async () => {
@@ -426,13 +512,14 @@ window.startQRScanner = async () => {
 
 window.stopQRScanner = async () => {
     if (html5QrCode) {
-        await html5QrCode.stop();
-        html5QrCode = null;
+        try {
+            await html5QrCode.stop();
+            html5QrCode = null;
+        } catch (e) { console.error(e); }
     }
 };
 
 async function onScanSuccess(decodedText) {
-    // Сканерди токтотпостон, "пауза" кылабыз (бир эле кодду кайталабаш үчүн)
     if (html5QrCode) await html5QrCode.pause();
     
     try {
@@ -444,28 +531,26 @@ async function onScanSuccess(decodedText) {
             const seats = data.selectedSeats ? data.selectedSeats.length : 1;
 
             if (data.status === 'checked-in') {
-                await Swal.fire("КАТА", "Бул билет мурун эле колдонулган! ❌", "error");
+                await Swal.fire("КАТА", "Бул билет колдонулуп бүткөн! ❌", "error");
             } 
             else if (data.status === 'approved') {
-                const confirm = await askConfirm("КИРҮҮГӨ УРУКСАТ", `Кардар: ${data.userName}\nОрундар: ${seats}\n\nКирүүгө уруксат бересизби?`);
+                const confirm = await askConfirm("КИРҮҮГӨ УРУКСАТ", `Кардар: ${data.userName}\nОрундар: ${seats}\nКино: ${data.movieTitle}`);
                 if (confirm) {
                     await updateDoc(ticketRef, { status: "checked-in" });
-                    showToast("Билет кабыл алынды! ✅", "success");
+                    showToast("Кирүү катталды! ✅", "success");
                 }
             } 
             else {
                 showToast("Билет али ырастала элек! ⚠️", "warning");
             }
         } else {
-            showToast("Мындай билет табылган жок! ❌", "error");
+            showToast("Табылбады!", "error");
         }
     } catch (e) {
-        showToast("QR окууда ката кетти!", "error");
+        showToast("QR ката!", "error");
     }
 
-    // 2 секунддан кийин сканерди кайра иштетүү
     setTimeout(async () => {
         if (html5QrCode) await html5QrCode.resume();
-    }, 2000);
+    }, 2500);
 }
-
