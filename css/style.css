@@ -958,12 +958,12 @@ body {
     }
 
     /* Категориялар (Тамактар / Суусундуктар блоктору) */
-    .atkn-category {
+.atkn-category {
         background: rgba(255, 255, 255, 0.05) !important;
         border-radius: 20px !important;
         padding: 20px !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        height: fit-content !important;
+        height: fit-content !important; /* Бийиктиги ичиндегиге жараша */
     }
 
     /* Тамактын өзү (Аты, баасы, саны) */
