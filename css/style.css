@@ -893,170 +893,165 @@ body {
 
 
 
-/* ================= ПК ҮЧҮН ТОЛУК РЕЙСТАЙЛИНГ (1024px+) ================= */
+/* ============================================================
+   1. ГЛОБАЛДЫК ЖАНА МОБИЛДИК СТИЛДЕР (НЕГИЗГИ)
+   ============================================================ */
+:root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+    --accent-color: #00d2ff;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(60deg, #37268d 0%, #00acc1 100%);
+    background-attachment: fixed; /* Фон жылбайт */
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: white;
+}
+
+/* Контенттин мобилдик чеги */
+.content-section, #profile-section {
+    padding: 20px 15px 120px;
+}
+
+/* Мобилдик навигация (Bottom) */
+.nav-wrapper {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    z-index: 1100;
+}
+
+.bottom-nav {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    height: 70px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: var(--glass-border);
+}
+
+/* ============================================================
+   2. ПК (DESKTOP) ВЕРСИЯСЫ - @media (min-width: 1024px)
+   Бул жерде "кашаны" тазалап, ПК үчүн жаңы логика түзөбүз
+   ============================================================ */
 
 @media screen and (min-width: 1024px) {
-    /* 1. Навигация - Жогорудагы калкып турган айнек панель */
+    
+    /* А) Навигацияны жогоруга жылдыруу */
     .nav-wrapper {
-        top: 0;
+        top: 20px;
         bottom: auto;
-        left: 0;
-        right: 0;
         width: 100%;
-        max-width: 100%;
-        transform: none;
-        z-index: 2000;
-        padding: 10px 0;
+        max-width: 1200px;
+        transform: translateX(-50%);
     }
 
     .bottom-nav {
-        width: 95%;
-        max-width: 1200px;
-        margin: 0 auto;
-        height: 75px;
-        background: rgba(15, 23, 42, 0.6); /* Күңүрт айнек эффект */
-        backdrop-filter: blur(25px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        justify-content: space-between; /* Элементтерди эки чекеге жаят */
+        height: 65px;
         padding: 0 40px;
+        background: rgba(15, 23, 42, 0.7); /* Күңүртүрөөк, ПКда кооз көрүнөт */
+        border-radius: 20px;
     }
 
-    /* Навигациянын ичиндеги тексттерди жана иконкаларды жайгаштыруу */
     .nav-item {
-        flex-direction: row; /* Текст менен иконка бир катарда */
-        gap: 12px;
-        padding: 10px 20px;
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    .nav-item .material-icons-round {
-        font-size: 24px;
+        flex-direction: row !important; /* Иконка менен текст бир катарда */
+        gap: 10px;
+        padding: 8px 15px;
     }
 
     .nav-item span {
-        font-size: 15px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        margin-top: 0 !important;
+        font-size: 14px !important;
+        display: block !important;
     }
 
-    .nav-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #00d2ff;
-    }
-
-    .nav-item.active {
-        background: var(--primary-gradient);
-        color: white;
-        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-    }
-
-    /* 2. Негизги мазмундун жайгашуусу */
-    .content-section, #profile-section {
-        padding: 120px 60px 60px 60px !important; /* Навигация астына түшүп калбашы үчүн */
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    /* 3. Кино Карточкалары - Чоң экранда эффекттүү көрүнүш */
+    /* Б) Сетканы (Grid) тууралоо - 4 же 5 катар */
     .movie-grid, .glass-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 35px;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+        gap: 30px !important;
+        padding: 40px 0 !important;
     }
 
+    /* В) Контенттин ПКдагы чектери */
+    .content-section, #profile-section {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding-top: 120px !important; /* Навигация жогоруда болгону үчүн */
+    }
+
+    /* Г) Карточкалардын ПКдагы эффекти */
     .glass-card, .movie-glass-card {
-        height: 420px; /* Бийиктигин көбөйттүк */
-        border-radius: 24px;
-        transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+        height: 400px !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Ховер эффекти: Карточка чоңоюп, көлөкөсү тереңдейт */
     .glass-card:hover {
-        transform: translateY(-20px) scale(1.05);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         border-color: var(--accent-color);
-        z-index: 10;
     }
 
-    /* 4. Анти-кино жана Модалдык терезелер */
-    #booking-modal, #atkn-modal-overlay {
-        align-items: center;
-    }
-
+    /* Д) Модалдык терезелерди ПКга ылайыктап кеңейтүү */
     .modal-content, .atkn-modal-container {
-        max-width: 800px; /* Кенен кылып жасадык */
+        max-width: 750px !important; /* ПКда кенен болсун */
+        padding: 50px !important;
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Ичин экиге бөлдүк: маалымат жана тандоо */
+        grid-template-columns: 1fr 1fr; /* Ичин экиге бөлдүк */
         gap: 30px;
-        padding: 45px;
-        border-radius: 40px;
     }
 
-    /* Эгер модалдын ичинде сүрөт же видео болсо, ал сол жакта, форма оң жакта болот */
-    .modal-title, .atkn-title {
-        grid-column: span 2; /* Заголовок толук ээлейт */
-        font-size: 32px;
-        text-align: left;
+    /* Модалдын ичиндеги баш сөздөр эки колоннаны тең ээлеши керек */
+    .modal-title, .atkn-title, #selected-movie-name, .atkn-subtitle {
+        grid-column: span 2;
+        text-align: center;
     }
 
-    .time-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-    }
-
-    /* Анти-кино менюсун ПКда 3 катар кылабыз */
     .atkn-menu-accordion {
         grid-column: span 2;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: 1fr 1fr 1fr; /* Тамактар 3 катарда */
+        gap: 15px;
     }
 
-    /* 5. Профиль бөлүмү - ПКда ортодо кооз турушу үчүн */
-    #profile-section {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 90vh;
+    .btn-main, .atkn-main-btn {
+        grid-column: span 2; /* Кнопка толук кеңдикте */
     }
 
+    /* Е) Профиль бөлүмү ПКда */
     .auth-wrapper {
-        width: 100%;
-        max-width: 480px;
-    }
-
-    .auth-screen {
-        padding: 50px;
-        border-radius: 40px;
-    }
-
-    /* 6. Фондогу толкундарды жайлатуу жана тунук кылуу */
-    .waves-container {
-        height: 25vh;
-        opacity: 0.4;
-    }
-
-    /* 7. Scrollbar дизайны */
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(#6366f1, #ec4899);
-        border-radius: 20px;
-        border: 2px solid #0f172a;
+        max-width: 450px;
+        margin: 0 auto;
     }
 }
 
-/* 4K мониторлор үчүн кошумча */
-@media screen and (min-width: 1920px) {
-    .content-section {
-        max-width: 1800px;
-    }
-    .movie-grid {
-        grid-template-columns: repeat(6, 1fr);
-    }
+/* ============================================================
+   3. КОШУМЧА ЭЛЕМЕНТТЕРДИ ТАЗАЛОО
+   ============================================================ */
+
+/* Скроллду кооздоо (ПК үчүн маанилүү) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 10px;
+}
+
+/* Модалдык терезе ачык болгондо фонду бүдөмүк кылуу */
+#booking-modal, #atkn-modal-overlay {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
