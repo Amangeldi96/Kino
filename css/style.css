@@ -889,3 +889,89 @@ body {
     color: #00ffcc;
     font-weight: bold;
 }
+
+
+
+
+/* ================= 6. DESKTOP & TABLET ADAPTATION (ПК ВЕРСИЯ) ================= */
+
+@media screen and (min-width: 1024px) {
+    /* Негизги контейнерди ортого алуу */
+    .content-section, #profile-section {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Кинолордун торун (Grid) ПК үчүн 4-5 катарга өзгөртүү */
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(4, 1fr); /* ПКда 4 кино катар тизилет */
+        gap: 25px;
+        padding: 30px;
+    }
+
+    /* Карточкалардын бийиктигин бир аз чоңойтуу */
+    .glass-card, .movie-glass-card {
+        height: 380px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Навигация панелин ПКда жогору жактагы Header сыяктуу же компакттуу кылуу */
+    .nav-wrapper {
+        bottom: 30px;
+        width: 500px; /* ПКда өтө чоң болбошу керек */
+    }
+
+    /* Модалдык терезелердин көлөмү */
+    .modal-content, .atkn-modal-container {
+        max-width: 500px;
+        padding: 40px;
+    }
+
+    /* Анти-кинодогу убакыт тандоо торун 3 катарга тизүү */
+    .time-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Профиль бөлүмү */
+    .auth-wrapper {
+        max-width: 500px;
+    }
+
+    /* Скроллду кооздоо */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 10px;
+    }
+}
+
+/* Орточо экрандар үчүн (Планшет - iPad) */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(3, 1fr); /* Планшетте 3 кино */
+    }
+    
+    .nav-wrapper {
+        width: 70%;
+    }
+}
+
+/* Экран өтө чоң болсо (UltraWide) */
+@media screen and (min-width: 1440px) {
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(5, 1fr); /* 5 кино */
+    }
+    .content-section {
+        max-width: 1400px;
+    }
+}
