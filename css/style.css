@@ -892,7 +892,6 @@ body {
 
 
 
-
 /* ============================================================
    ПК ВЕРСИЯ (1024px ЖАНА ЖОГОРУ) - ФИНАЛДЫК ТАЗАЛОО
    ============================================================ */
@@ -938,14 +937,18 @@ body {
     }
 
     /* 2. МОДАЛДЫК ТЕРЕЗЕ (Антикино & Кино) */
-.modal-content, .atkn-modal-container {
-        width: 950px !important; /* Кенендик */
+    .modal-content, .atkn-modal-container {
+        width: 1000px !important; /* Кенен кылып жасадык */
+        max-width: 90% !important;
+        height: auto !important;
         max-height: 85vh !important;
-        overflow-y: auto !important;
+        margin: auto !important;
         display: flex !important;
         flex-direction: column !important;
         padding: 40px !important;
+        background: #1e293b !important;
         border-radius: 30px !important;
+        overflow-y: auto !important; /* Эгер батпаса ичинде скролл болот */
     }
 
     /* Тамак-аштардын тизмеси (Accordion) */
