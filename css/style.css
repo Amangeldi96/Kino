@@ -893,85 +893,130 @@ body {
 
 
 
-/* ================= 6. DESKTOP & TABLET ADAPTATION (ПК ВЕРСИЯ) ================= */
+/* ================= 6. ADVANCED DESKTOP OPTIMIZATION (ПК ВЕРСИЯ) ================= */
 
 @media screen and (min-width: 1024px) {
-    /* Негизги контейнерди ортого алуу */
+    /* 1. Навигацияны жогоруга жылдыруу (ПК үчүн ыңгайлуураак) */
+    .nav-wrapper {
+        top: 20px;
+        bottom: auto;
+        width: auto;
+        max-width: fit-content;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: all 0.4s ease;
+    }
+
+    .bottom-nav {
+        height: 60px;
+        padding: 0 30px;
+        border-radius: 50px; /* Сопак формада */
+        gap: 40px;
+    }
+
+    /* Навигациянын элементтерин горизонталдуу кылуу */
+    .nav-item {
+        flex-direction: row;
+        gap: 8px;
+        padding: 8px 15px;
+        border-radius: 12px;
+    }
+
+    .nav-item span {
+        margin-top: 0;
+        font-size: 14px;
+    }
+
+    .nav-item.active {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.05);
+    }
+
+    /* 2. Мазмундук бөлүмдөрдү чоңойтуу */
     .content-section, #profile-section {
-        max-width: 1200px;
+        max-width: 1300px;
         margin: 0 auto;
+        padding-top: 100px !important; /* Навигация жогоруда болгондуктан */
+        padding-left: 40px;
+        padding-right: 40px;
     }
 
-    /* Кинолордун торун (Grid) ПК үчүн 4-5 катарга өзгөртүү */
+    /* 3. Кинолордун Grid системасы */
     .movie-grid, .glass-grid {
-        grid-template-columns: repeat(4, 1fr); /* ПКда 4 кино катар тизилет */
-        gap: 25px;
-        padding: 30px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Автоматтык толтуруу */
+        gap: 30px;
+        padding: 40px 0;
     }
 
-    /* Карточкалардын бийиктигин бир аз чоңойтуу */
+    /* Карточкаларга Hover эффекти (Компьютерде чычкан үчүн) */
     .glass-card, .movie-glass-card {
-        height: 380px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 400px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
     }
 
     .glass-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.4);
     }
 
-    /* Навигация панелин ПКда жогору жактагы Header сыяктуу же компакттуу кылуу */
-    .nav-wrapper {
-        bottom: 30px;
-        width: 500px; /* ПКда өтө чоң болбошу керек */
-    }
-
-    /* Модалдык терезелердин көлөмү */
+    /* 4. Модалдык терезелер (ПК үчүн кенен жана кооз) */
     .modal-content, .atkn-modal-container {
-        max-width: 500px;
-        padding: 40px;
+        max-width: 600px;
+        padding: 50px;
+        border-radius: 40px;
     }
 
-    /* Анти-кинодогу убакыт тандоо торун 3 катарга тизүү */
     .time-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* Убакыттарды 4 катар кылабыз */
     }
 
-    /* Профиль бөлүмү */
+    /* Анти-кино менюсу ПКда 2 катар болуп көрүнсүн */
+    .atkn-menu-accordion {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    /* 5. Профиль бөлүмүн ПКда кооздоо */
     .auth-wrapper {
-        max-width: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
     }
 
-    /* Скроллду кооздоо */
-    ::-webkit-scrollbar {
-        width: 8px;
+    .auth-screen {
+        width: 450px;
+        padding: 45px;
     }
-    ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
+
+    /* 6. Header (Логотип) */
+    .app-header {
+        padding: 20px 50px;
+        background: transparent; /* Навигация жогоруда болгондуктан тунук кылсак болот */
+        backdrop-filter: none;
     }
-    ::-webkit-scrollbar-thumb {
-        background: var(--primary-gradient);
-        border-radius: 10px;
+
+    .logo-text {
+        font-size: 24px;
+        padding: 10px 20px;
+    }
+
+    /* 7. Толкундарды (Waves) жайлатуу (Экран чоң болгондо көздү чарчатпаш үчүн) */
+    .parallax > use {
+        animation-duration: 40s;
     }
 }
 
-/* Орточо экрандар үчүн (Планшет - iPad) */
+/* Планшеттер үчүн (iPad) */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
     .movie-grid, .glass-grid {
-        grid-template-columns: repeat(3, 1fr); /* Планшетте 3 кино */
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .nav-wrapper {
-        width: 70%;
-    }
-}
-
-/* Экран өтө чоң болсо (UltraWide) */
-@media screen and (min-width: 1440px) {
-    .movie-grid, .glass-grid {
-        grid-template-columns: repeat(5, 1fr); /* 5 кино */
-    }
-    .content-section {
-        max-width: 1400px;
+        width: 80%;
     }
 }
