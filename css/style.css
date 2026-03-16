@@ -892,117 +892,122 @@ body {
 
 
 
-/* ================= ПК ҮЧҮН ТОЛУК ЖАНА ТАЗА ОҢДОО (1024px+) ================= */
-
 @media screen and (min-width: 1024px) {
-    
-    /* 1. НАВИГАЦИЯ - Тексттерди жана Cinema жазуусун чыгаруу */
+    /* 1. НАВИГАЦИЯ - CINEMA ЖАЗУУСУ МЕНЕН */
     .nav-wrapper {
         position: fixed !important;
         top: 0 !important;
+        bottom: auto !important;
         left: 0 !important;
         width: 100% !important;
         transform: none !important;
-        z-index: 9999 !important;
+        z-index: 10000 !important;
     }
 
     .bottom-nav {
-        height: 75px !important;
+        height: 80px !important;
         border-radius: 0 !important;
-        background: rgba(15, 23, 42, 0.95) !important;
-        padding: 0 100px !important;
+        background: #0f172a !important; /* Күңүрт фон */
+        display: flex !important;
         justify-content: center !important;
-        gap: 40px !important;
+        align-items: center !important;
+        gap: 50px !important;
+        padding: 0 50px !important;
+        border-bottom: 2px solid rgba(255,255,255,0.1) !important;
     }
 
-    /* "Cinema" жазуусу же иконка тексттери көрүнүшү үчүн */
     .nav-item {
         flex-direction: row !important;
         gap: 10px !important;
-        min-width: 120px !important;
+        width: auto !important;
     }
 
     .nav-item span {
-        display: block !important; /* Жазууларды чыгарат */
-        font-size: 16px !important;
-        font-weight: 600 !important;
-        color: white !important;
+        display: inline-block !important; /* Жазууларды чыгаруу */
         visibility: visible !important;
         opacity: 1 !important;
+        font-size: 16px !important;
+        color: white !important;
+        margin: 0 !important;
     }
 
-    /* 2. МОДАЛДЫК ТЕРЕЗЕ - "Кашаны" тазалоо */
+    /* 2. МОДАЛДЫК ТЕРЕЗЕ - ТАМАК-АШТАРДЫ ТҮЗӨТҮҮ */
     .modal-content, .atkn-modal-container {
-        width: 900px !important;
-        max-height: 90vh !important;
-        display: grid !important;
-        grid-template-columns: 1fr 1.2fr !important; /* Сол жагы маалымат, оң жагы тандоо */
-        gap: 30px !important;
+        width: 950px !important; /* Кенендик */
+        max-height: 85vh !important;
+        margin: auto !important;
+        display: block !important; /* Grid-тен Block-ко өттүк, ичи батыш үчүн */
         padding: 40px !important;
-        overflow-y: auto !important;
         background: #1e293b !important;
-        border-radius: 25px !important;
+        border-radius: 30px !important;
+        overflow-y: auto !important;
+        position: relative !important;
     }
 
-    /* Тамак-аштар бөлүмү (Accordion) - ПКда кеңейтүү */
+    /* Тамак-аштардын Аккордеону */
     .atkn-menu-accordion {
-        grid-column: span 2 !important; /* Толук кенендикке жайылат */
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important; /* Эки катар кылабыз */
-        gap: 20px !important;
-        margin-top: 20px !important;
-    }
-
-    /* Ар бир тамак-аштын категориясы (Мисалы: Тамактар, Суусундуктар) */
-    .atkn-category {
-        background: rgba(255, 255, 255, 0.05) !important;
-        padding: 15px !important;
-        border-radius: 15px !important;
-        height: fit-content !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    }
-
-    /* Ичиндеги тамактардын тизмеси */
-    .atkn-item-list {
         display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        padding: 10px 0 !important;
+        flex-direction: row !important; /* Катар кылып тизүү */
+        flex-wrap: wrap !important; /* Батпаса астына түшөт */
+        gap: 20px !important;
+        width: 100% !important;
+        margin-top: 30px !important;
     }
 
-    /* Тамактын аты, баасы жана +/- кнопкалары бир катарда */
+    .atkn-category {
+        flex: 1 !important; /* Эки блок теңдей орун алат */
+        min-width: 400px !important; /* Өтө ичке болуп кетпеши үчүн */
+        background: rgba(255,255,255,0.05) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+
+    /* Тамактын өзү (Аты, баасы, +/-) */
     .atkn-item {
-        display: grid !important;
-        grid-template-columns: 1fr auto auto !important; /* Аты - Баасы - Кнопкалар */
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 12px !important;
+        background: rgba(0,0,0,0.2) !important;
+        margin-bottom: 10px !important;
+        border-radius: 12px !important;
+    }
+
+    .atkn-item-controls {
+        display: flex !important;
         align-items: center !important;
         gap: 15px !important;
-        background: rgba(255, 255, 255, 0.03) !important;
-        padding: 8px 12px !important;
-        border-radius: 10px !important;
     }
 
-    .atkn-item span {
-        font-size: 14px !important;
-    }
-
-    /* 3. УБАКИ ТАНДОО (Time Grid) */
+    /* 3. УБАКИ ТАНДОО (2 катарда кенен) */
     .time-grid {
         display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important; /* 3 катар */
-        gap: 10px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 15px !important;
+        margin: 20px 0 !important;
     }
 
-    /* 4. КИЙИНКИ КНОПКАСЫ */
-    .btn-main, .atkn-main-btn {
-        grid-column: span 2 !important;
-        height: 55px !important;
-        margin-top: 20px !important;
+    /* 4. КАРТОЧКАЛАРДЫН СЕТКАСЫ */
+    .content-section {
+        padding-top: 120px !important;
+        max-width: 1400px !important;
+        margin: 0 auto !important;
     }
 
-    /* Сүрөттөгү сол жактагы боштукту толтуруу */
-    .modal-left-side {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 30px !important;
     }
+
+    /* Кийинки кнопкасы */
+    .atkn-main-btn {
+        width: 100% !important;
+        height: 60px !important;
+        font-size: 18px !important;
+        margin-top: 30px !important;
+    }
+
+    /* Мобилдик элементтерди ПКда жашыруу */
+    .app-header { display: none !important; }
 }
