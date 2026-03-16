@@ -958,6 +958,7 @@ body {
         gap: 30px !important;
         width: 100% !important;
         margin-top: 25px !important;
+        align-items: start !important;
     }
 
     /* Категориялар (Тамактар / Суусундуктар блоктору) */
