@@ -892,115 +892,117 @@ body {
 
 
 
-/* ================= ПК ҮЧҮН НЕГИЗГИ ОҢДООЛОР (1024px+) ================= */
+/* ================= ПК ҮЧҮН ТОЛУК ЖАНА ТАЗА ОҢДОО (1024px+) ================= */
 
 @media screen and (min-width: 1024px) {
     
-    /* 1. МЕНЮНУ ЖОГОРУГА ЧЫГАРУУ (Профессионалдык Navbar) */
+    /* 1. НАВИГАЦИЯ - Тексттерди жана Cinema жазуусун чыгаруу */
     .nav-wrapper {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        right: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
         transform: none !important;
-        bottom: auto !important;
-        z-index: 9999 !important; /* Баарынан жогору турат */
+        z-index: 9999 !important;
     }
 
     .bottom-nav {
-        height: 70px !important;
-        width: 100% !important;
+        height: 75px !important;
         border-radius: 0 !important;
-        background: rgba(15, 23, 42, 0.9) !important; /* Күңүрт айнек */
-        backdrop-filter: blur(20px) !important;
-        border: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-        display: flex !important;
-        justify-content: center !important; /* Менюларды ортого тизебиз */
-        gap: 60px !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+        padding: 0 100px !important;
+        justify-content: center !important;
+        gap: 40px !important;
     }
 
+    /* "Cinema" жазуусу же иконка тексттери көрүнүшү үчүн */
     .nav-item {
-        flex-direction: row !important; /* Иконка менен текст бир катарда */
-        gap: 12px !important;
-        padding: 10px 20px !important;
-        color: white !important;
+        flex-direction: row !important;
+        gap: 10px !important;
+        min-width: 120px !important;
     }
 
     .nav-item span {
-        display: inline !important; /* Тексттерди сөзсүз көрсөтүү */
+        display: block !important; /* Жазууларды чыгарат */
         font-size: 16px !important;
         font-weight: 600 !important;
-        margin: 0 !important;
+        color: white !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
-    /* 2. МОДАЛДЫК ТЕРЕЗЕНИ ОҢДОО (Ортодо жана кенен) */
-    #booking-modal, #atkn-modal-overlay {
-        display: none; /* JS ачат */
-        justify-content: center !important;
-        align-items: center !important;
-    }
-
-    /* Модалдын контейнери */
+    /* 2. МОДАЛДЫК ТЕРЕЗЕ - "Кашаны" тазалоо */
     .modal-content, .atkn-modal-container {
-        position: relative !important;
-        margin: auto !important;
-        width: 80% !important;
-        max-width: 900px !important; /* ПКда кенен болот */
-        max-height: 85vh !important;
+        width: 900px !important;
+        max-height: 90vh !important;
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important; /* Ичин 2ге бөлдүк */
+        grid-template-columns: 1fr 1.2fr !important; /* Сол жагы маалымат, оң жагы тандоо */
         gap: 30px !important;
         padding: 40px !important;
-        background: rgba(30, 41, 59, 0.95) !important;
-        border-radius: 30px !important;
-        overflow-y: auto !important; /* Ичи батпаса скролл болот */
+        overflow-y: auto !important;
+        background: #1e293b !important;
+        border-radius: 25px !important;
     }
 
-    /* Заголовок (Антикино аты) */
-    .modal-title, .atkn-title, #selected-movie-name {
-        grid-column: span 2 !important; /* Толук кеңдикте */
-        text-align: center !important;
-        font-size: 32px !important;
-        margin-bottom: 20px !important;
-    }
-
-    /* Убакыт тандоо сеткасы */
-    .time-grid, .time-chips {
-        grid-column: span 1 !important; /* Сол жакта же оң жакта турат */
+    /* Тамак-аштар бөлүмү (Accordion) - ПКда кеңейтүү */
+    .atkn-menu-accordion {
+        grid-column: span 2 !important; /* Толук кенендикке жайылат */
         display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr 1fr !important; /* Эки катар кылабыз */
+        gap: 20px !important;
+        margin-top: 20px !important;
+    }
+
+    /* Ар бир тамак-аштын категориясы (Мисалы: Тамактар, Суусундуктар) */
+    .atkn-category {
+        background: rgba(255, 255, 255, 0.05) !important;
+        padding: 15px !important;
+        border-radius: 15px !important;
+        height: fit-content !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Ичиндеги тамактардын тизмеси */
+    .atkn-item-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 10px 0 !important;
+    }
+
+    /* Тамактын аты, баасы жана +/- кнопкалары бир катарда */
+    .atkn-item {
+        display: grid !important;
+        grid-template-columns: 1fr auto auto !important; /* Аты - Баасы - Кнопкалар */
+        align-items: center !important;
+        gap: 15px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        padding: 8px 12px !important;
+        border-radius: 10px !important;
+    }
+
+    .atkn-item span {
+        font-size: 14px !important;
+    }
+
+    /* 3. УБАКИ ТАНДОО (Time Grid) */
+    .time-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 катар */
         gap: 10px !important;
     }
 
-    /* Тамак-аш менюсу (Аккордеон) */
-    .atkn-menu-accordion {
+    /* 4. КИЙИНКИ КНОПКАСЫ */
+    .btn-main, .atkn-main-btn {
         grid-column: span 2 !important;
-        display: grid !important;
-        grid-template-columns: 1fr 1fr 1fr !important; /* 3 катар */
-        gap: 15px !important;
+        height: 55px !important;
+        margin-top: 20px !important;
     }
 
-    /* 3. КАРТОЧКАЛАРДЫ ТҮЗӨТҮҮ */
-    .content-section {
-        padding-top: 120px !important; /* Меню астында калбашы үчүн */
-        max-width: 1400px !important;
-        margin: 0 auto !important;
-    }
-
-    .movie-grid, .glass-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-        gap: 30px !important;
-    }
-
-    .glass-card, .movie-glass-card {
-        height: 400px !important;
-    }
-
-    /* 4. ЖАШЫРУУ */
-    .app-header {
-        display: none !important; /* ПКда кереги жок, Navbar бар */
+    /* Сүрөттөгү сол жактагы боштукту толтуруу */
+    .modal-left-side {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 }
