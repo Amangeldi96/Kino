@@ -967,16 +967,21 @@ body {
     }
 
     /* Тамактын өзү (Аты, баасы, саны) */
+.atkn-item-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 15px !important;
+    }
+
     .atkn-item {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
         background: rgba(0, 0, 0, 0.2) !important;
         padding: 12px 15px !important;
-        margin-bottom: 12px !important;
         border-radius: 12px !important;
     }
-
     /* Санын тандоо (+ / -) */
     .atkn-item-controls {
         display: flex !important;
