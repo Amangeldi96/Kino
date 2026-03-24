@@ -1,60 +1,49 @@
-/* Кино Токтогул - Толук Оптимизацияланган Стилдер
-   Glassmorphism + Responsive Design (2026)
+/* TOKTOGUL CINEMA - FINAL PROFESSIONAL STYLES (2026)
+   Glassmorphism + Ultra Responsive UI
 */
 
 /* ================= 1. ГЛОБАЛДЫК ЖАНА ӨЗГӨРМӨЛӨР ================= */
 :root {
     --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-    --danger-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
-    --accent-color: #00d2ff;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
     --glass-blur: blur(20px);
+    --accent: #00d2ff;
     --text-white: #ffffff;
-    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --text-dim: rgba(255, 255, 255, 0.6);
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { 
     box-sizing: border-box; 
     -webkit-tap-highlight-color: transparent; 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    margin: 0; padding: 0;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
+    background: radial-gradient(circle at top right, #1e1e3f, #111122);
     background-attachment: fixed;
     min-height: 100vh;
-    color: white;
+    color: var(--text-white);
     overflow-x: hidden;
+    line-height: 1.6;
 }
 
 /* Скроллду кооздоо */
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 
-/* ================= 2. НЕГИЗГИ ТҮЗҮМ (LAYOUT) ================= */
-.content-section {
-    padding-bottom: 140px !important;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-.no-scroll { overflow: hidden; height: 100vh; }
-
-/* Header & Logo */
+/* ================= 2. HEADER ЖАНА ПК НАВИГАЦИЯ ================= */
 .app-header {
-    padding: 12px 20px;
+    padding: 15px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: var(--glass-border);
     position: sticky;
     top: 0;
@@ -62,257 +51,243 @@ body {
 }
 
 .logo-text { 
-    padding: 8px 16px;
-    font-weight: 800; 
-    font-size: 18px; 
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 12px;
+    padding: 8px 18px;
+    font-weight: 900; 
+    font-size: 20px; 
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     border: var(--glass-border);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    letter-spacing: 1px;
+}
+
+/* ПК үчүн меню (Башында мобилдикте жашыруун) */
+.desktop-menu {
+    display: none;
+    gap: 25px;
+}
+
+.desktop-menu a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.desktop-menu a:hover, .desktop-menu a.active {
+    color: #fff;
+}
+
+.desktop-menu a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; left: 0; width: 100%; height: 2px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+}
+
+/* ================= 3. НЕГИЗГИ МАЗМУН (GRID) ================= */
+.content-section {
+    padding: 20px 0 140px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .section-header {
-    padding: 25px 0 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    padding: 25px 5%;
+    display: flex; align-items: center; gap: 15px;
 }
 
 .section-header::before {
-    content: "";
-    width: 5px;
-    height: 1.3em;
-    background: var(--primary-gradient);
-    border-radius: 4px;
+    content: ""; width: 6px; height: 26px;
+    background: var(--primary-gradient); border-radius: 10px;
 }
 
-.m-title { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+.m-title { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
 
-/* ================= 3. КАРТАЛАР (MOVIE GRID) ================= */
-.movie-grid, .glass-grid {
+.movie-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 10px 15px;
+    gap: 18px;
+    padding: 0 5%;
 }
 
-.glass-card, .movie-glass-card {
+.glass-card {
     position: relative;
-    height: 290px;
-    border-radius: 20px;
+    height: 310px;
+    border-radius: 24px;
     overflow: hidden;
     border: var(--glass-border);
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: var(--card-shadow);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--glass-bg);
+    transition: var(--transition);
 }
 
-.glass-card:hover, .movie-glass-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+.glass-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    border-color: rgba(255,255,255,0.4);
 }
 
-.glass-card img, .movie-glass-card img {
+.glass-card img {
     width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s ease;
 }
 
-.glass-card:hover img { transform: scale(1.08); }
+.glass-card:hover img { transform: scale(1.1); }
 
-.glass-footer, .glass-overlay-box {
+.glass-footer {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    padding: 14px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: var(--glass-border);
-    text-align: center;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    backdrop-filter: blur(8px);
 }
 
-.glass-footer h3, .glass-overlay-box h3 {
-    font-size: 14px; font-weight: 700; margin: 0 0 10px 0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.glass-footer h3 { font-size: 14px; margin-bottom: 10px; font-weight: 700; }
 
-.glass-btn, .glass-date-tag {
-    display: inline-block;
-    width: 100%;
-    font-size: 12px; font-weight: 800;
-    color: #fff;
+.glass-btn {
+    width: 100%; padding: 12px;
     background: var(--primary-gradient);
-    border: none;
-    padding: 8px 0;
-    border-radius: 12px;
-    text-transform: uppercase;
-    cursor: pointer;
+    border: none; border-radius: 14px;
+    color: #fff; font-weight: 800;
+    cursor: pointer; text-transform: uppercase;
     transition: 0.3s;
 }
 
 .glass-btn:active { transform: scale(0.95); }
 
-/* ================= 4. ТОЛКУНДАР (WAVES) ================= */
-.waves-container {
-    position: fixed;
-    bottom: 0; left: 0; width: 100%;
-    height: 12vh; min-height: 100px;
-    z-index: 5; pointer-events: none;
+/* ================= 4. АНТИКИНО МОДАЛКАСЫ ================= */
+.modal-overlay, #atkn-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none; justify-content: center; align-items: center;
+    backdrop-filter: blur(15px); z-index: 2000;
+    padding: 20px;
 }
 
-.waves { width: 100%; height: 100%; }
-
-.parallax > use {
-    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
-}
-.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
-.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
-.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
-.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
-
-@keyframes move-forever {
-    0% { transform: translate3d(-90px,0,0); }
-    100% { transform: translate3d(85px,0,0); }
+.atkn-modal-container {
+    width: 100%; max-width: 480px;
+    background: rgba(255, 255, 255, 0.05);
+    border: var(--glass-border);
+    border-radius: 32px; padding: 35px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* ================= 5. НАВИГАЦИЯ (BOTTOM NAV) ================= */
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.8) translateY(40px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.atkn-title { font-size: 26px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+.atkn-subtitle { color: var(--text-dim); text-align: center; font-size: 14px; margin-bottom: 25px; }
+
+.atkn-input-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px; padding: 14px 18px;
+    margin-bottom: 15px; display: flex; align-items: center; gap: 12px;
+}
+
+.atkn-field {
+    background: transparent; border: none; color: #fff;
+    width: 100%; outline: none; font-size: 16px;
+}
+
+.time-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px; margin: 20px 0;
+}
+
+.slot-info {
+    padding: 14px; background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px; text-align: center; cursor: pointer;
+    transition: 0.3s; font-size: 14px;
+}
+
+.slot-card input:checked + .slot-info {
+    background: var(--primary-gradient);
+    border: none; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+}
+
+.atkn-main-btn {
+    width: 100%; padding: 16px; margin-top: 10px;
+    background: var(--primary-gradient);
+    border: none; border-radius: 18px;
+    color: #fff; font-size: 16px; font-weight: 800;
+    cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ================= 5. МОБИЛДИК НАВИГАЦИЯ (BOTTOM NAV) ================= */
 .nav-wrapper {
-    position: fixed;
-    bottom: 25px; left: 50%;
+    position: fixed; bottom: 25px; left: 50%;
     transform: translateX(-50%);
-    width: 90%; max-width: 400px;
-    z-index: 1100;
+    width: 90%; max-width: 400px; z-index: 1100;
 }
 
 .bottom-nav {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    height: 70px;
-    border-radius: 25px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    background: rgba(25, 25, 45, 0.6);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    height: 75px; border-radius: 28px;
+    display: flex; justify-content: space-around; align-items: center;
     border: var(--glass-border);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
 
 .nav-item {
     display: flex; flex-direction: column; align-items: center;
-    color: rgba(255, 255, 255, 0.5);
-    text-decoration: none; transition: 0.3s;
+    color: var(--text-dim); text-decoration: none; transition: 0.3s;
 }
 
 .nav-item.active { color: #fff; transform: translateY(-5px); }
-.nav-item .material-icons-round { font-size: 26px; }
-.nav-item span { font-size: 11px; font-weight: 700; margin-top: 4px; }
+.nav-item i, .nav-item .material-icons-round { font-size: 24px; margin-bottom: 4px; }
+.nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
 
-/* ================= 6. МОДАЛКАЛАР (BOOKING & ANTI-KINO) ================= */
-#booking-modal, #atkn-modal-overlay {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    z-index: 10000; justify-content: center; align-items: center;
-    backdrop-filter: blur(12px);
-    padding: 20px;
-}
+/* ================= 6. ПК ВЕРСИЯ (PC ADAPTATION) ================= */
+@media (min-width: 1024px) {
+    /* Мобилдик менюну өчүрүү */
+    .nav-wrapper { display: none; }
+    
+    /* Хедердеги менюну чыгаруу */
+    .desktop-menu { display: flex; }
+    
+    .app-header { padding: 18px 8%; }
+    .content-section { padding-top: 50px; }
 
-.modal-content, .atkn-modal-container {
-    width: 100%; max-width: 400px;
-    background: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(25px); 
-    border-radius: 30px;
-    padding: 35px 25px; 
-    border: var(--glass-border);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-    color: white;
-    max-height: 85vh; overflow-y: auto;
-}
-
-.modal-title, .atkn-title {
-    font-size: 24px; font-weight: 800; margin-bottom: 10px;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
-/* Формалар үчүн Input стилдери */
-.input-box, .atkn-input-wrapper {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px; padding: 14px;
-    margin-bottom: 15px; display: flex; align-items: center; gap: 12px;
-}
-
-.input-box input, .atkn-field {
-    background: transparent; border: none; color: white;
-    width: 100%; outline: none; font-size: 15px;
-}
-
-.btn-main, .atkn-main-btn {
-    width: 100%; padding: 16px;
-    background: var(--primary-gradient);
-    border: none; border-radius: 18px;
-    color: white; font-size: 16px; font-weight: 700;
-    cursor: pointer; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
-    transition: 0.3s;
-}
-
-/* Time Slots (Убакыттар) */
-.time-chips, .time-grid {
-    display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;
-}
-
-.time-chip, .slot-info {
-    padding: 10px 15px; background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 13px;
-}
-
-.time-chip.selected, .slot-card input:checked + .slot-info {
-    background: var(--primary-gradient); border: none;
-}
-
-/* ================= 7. ПРОФИЛЬ СЕКЦИЯСЫ ================= */
-#profile-section {
-    display: none; flex-direction: column; align-items: center;
-    padding: 30px 20px 140px;
-}
-
-.profile-card, .auth-screen {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 28px; padding: 40px 25px;
-    width: 100%; max-width: 450px;
-    border: var(--glass-border); text-align: center;
-}
-
-.brand-icon {
-    width: 70px; height: 70px; background: var(--primary-gradient);
-    border-radius: 20px; display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-/* ================= 8. RESPONSIVE (ПК ВЕРСИЯ) ================= */
-@media (min-width: 768px) {
-    .movie-grid, .glass-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 25px; padding: 30px 40px;
-        max-width: 1400px; margin: 0 auto;
+    /* Кинолорду ПКда 4 же 5тен тизүү */
+    .movie-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px; padding: 0 8%;
     }
 
-    .glass-card, .movie-glass-card { height: 350px; }
+    .glass-card { height: 400px; }
 
-    .nav-wrapper { max-width: 500px; }
-    
-    .logo-text { font-size: 22px; }
+    .atkn-modal-container {
+        max-width: 600px; padding: 50px;
+    }
+
+    .time-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1440px) {
     .movie-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
-/* Анимациялар */
-.step-container { animation: slideFade 0.4s ease-out; }
-@keyframes slideFade {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
+/* ================= 7. ТОЛКУНДАР (WAVES) ================= */
+.waves-container {
+    position: fixed; bottom: 0; width: 100%; height: 120px;
+    z-index: -1; pointer-events: none; opacity: 0.4;
+}
+
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+@keyframes move-forever {
+    0% { transform: translate3d(-90px, 0, 0); }
+    100% { transform: translate3d(85px, 0, 0); }
 }
