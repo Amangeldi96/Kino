@@ -26,6 +26,38 @@ body {
     color: white;
     overflow-x: hidden;
 }
+
+/* ================= КУРСОР ЖАНА ИНТЕРАКТИВДҮҮЛҮК ================= */
+
+/* Бардык баскычтар, шилтемелер жана тандалуучу элементтер үчүн */
+button, 
+a, 
+input[type="button"], 
+input[type="submit"], 
+input[type="checkbox"], 
+input[type="radio"], 
+.nav-item, 
+.glass-card, 
+.time-chip, 
+.slot-card, 
+.menu-header, 
+.btn-main, 
+.btn-secondary, 
+.btn-next, 
+.close-btn,
+.custom-file-upload {
+    cursor: pointer !important;
+}
+
+/* Эгер баскыч өчүк (disabled) болсо, курсорду кайра калыбына келтирүү */
+button:disabled, 
+.btn-main:disabled {
+    cursor: not-allowed !important;
+}
+
+
+
+
 /* Кинолор жайгашкан негизги блок */
 .content-section {
     padding-bottom: 120px !important; /* Навигация панелинин бийиктигинен бир аз көбүрөөк */
@@ -1040,9 +1072,6 @@ body {
         border-color: #a855f7;
         background: rgba(255, 255, 255, 0.1);
     }
-.button {
-  cursor: pointer;
-}
 }
 
 /* Эгер экран өтө чоң болсо (Ultra Wide) */
