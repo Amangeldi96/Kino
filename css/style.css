@@ -998,7 +998,7 @@ body {
     }
 
     .glass-card, .movie-glass-card {
-        height: 380px; /* Карталарды бир аз чоңойтуу */
+        height: 400px; /* Карталарды бир аз чоңойтуу */
         transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
 
