@@ -891,212 +891,162 @@ body {
 }
 
 
-
-/* ============================================================
-   💻 FULL DESKTOP UPGRADE (1024px+)
-   ============================================================ */
-
-@media (min-width: 1024px) {
-
-    /* =======================
-       BODY & LAYOUT
-       ======================= */
-    body {
-        padding: 0;
-    }
-
-    .content-section {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 120px 20px 60px !important;
-    }
-
-    /* =======================
-       GRID (MOVIES)
-       ======================= */
-    .movie-grid,
-    .glass-grid {
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 28px;
-        padding: 20px 0;
-    }
-
-    /* =======================
-       CARD (PREMIUM)
-       ======================= */
-    .glass-card,
-    .movie-glass-card {
-        height: 380px;
-        border-radius: 20px;
-        overflow: hidden;
-
-        position: relative;
-        cursor: pointer;
-
-        transition: transform 0.35s ease, box-shadow 0.35s ease;
-    }
-
-    .glass-card:hover,
-    .movie-glass-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-    }
-
-    /* IMAGE ZOOM */
-    .glass-card img,
-    .movie-glass-card img {
-        transition: transform 0.5s ease;
-    }
-
-    .glass-card:hover img,
-    .movie-glass-card:hover img {
-        transform: scale(1.1);
-    }
-
-    /* =======================
-       OVERLAY (TITLE)
-       ======================= */
-    .glass-footer,
-    .glass-overlay-box {
-        padding: 16px;
-
-        background: linear-gradient(
-            to top,
-            rgba(0,0,0,0.8),
-            rgba(0,0,0,0.3),
-            transparent
-        );
-
-        backdrop-filter: blur(10px);
-    }
-
-    .glass-footer h3,
-    .glass-overlay-box h3 {
-        font-size: 15px;
-        font-weight: 700;
-    }
-
-    /* BUTTON STYLE */
-    .glass-btn,
-    .glass-date-tag {
-        font-size: 12px;
-        padding: 6px 16px;
-        border-radius: 20px;
-
-        background: rgba(0, 210, 255, 0.15);
-        border: 1px solid rgba(0, 210, 255, 0.4);
-    }
-
-    /* =======================
-       SECTION HEADER
-       ======================= */
-    .section-header {
-        padding: 30px 0 10px 0;
-    }
-
-    .m-title {
-        font-size: 26px;
-        letter-spacing: 1px;
-    }
-
-    /* =======================
-       TIME GRID
-       ======================= */
-    .time-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-    }
-
-    /* =======================
-       MODALS (BIG SCREEN)
-       ======================= */
-    .modal-content,
-    .atkn-modal-container {
-        max-width: 900px;
-        width: 100%;
-        padding: 40px;
-        border-radius: 25px;
-    }
-
-    /* =======================
-       ACCORDION (FOOD)
-       ======================= */
-    .atkn-menu-accordion {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-    }
-
-    .menu-item {
-        border-radius: 16px;
-    }
-
-    .menu-header {
-        padding: 18px;
-    }
-
-    /* =======================
-       PROFILE CENTER
-       ======================= */
-    #profile-section {
-        justify-content: center;
-        align-items: center;
-    }
-
-    .auth-wrapper {
-        margin-top: 0;
-    }
-
-    /* =======================
-       NAVBAR FIX (TOP)
-       ======================= */
-    .nav-wrapper {
-        position: fixed;
-        top: 0;
-        bottom: auto;
-        left: 0;
-        transform: none;
-
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .bottom-nav {
-        width: 100%;
-        max-width: 1200px;
-
-        height: 75px;
-        border-radius: 0;
-
-        justify-content: center;
-        gap: 60px;
-
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-
-        border-bottom: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .nav-item {
-        flex-direction: row;
-        gap: 10px;
-        color: rgba(255,255,255,0.6);
-    }
-
-    .nav-item span {
-        display: inline-block;
-        font-size: 15px;
-    }
-
-    /* =======================
-       MOBILE OFF
-       ======================= */
-    .app-header {
-        display: none !important;
-    }
-
-    .waves-container {
-        display: none;
-    }
-}
+   /* ================= 8. МЕДИА СУРООЛОР (ПК ВЕРСИЯ) ================= */
+        /* Планшеттер (768px жана андан жогору) */
+        @media (min-width: 768px) {
+            .movie-grid, .glass-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                padding: 20px 25px;
+            }
+            
+            .glass-card, .movie-glass-card {
+                height: 320px;
+            }
+            
+            .nav-wrapper {
+                max-width: 500px;
+                bottom: 30px;
+            }
+            
+            .bottom-nav {
+                height: 75px;
+            }
+            
+            .modal-content {
+                max-width: 500px;
+                padding: 40px 30px;
+            }
+            
+            .atkn-modal-container {
+                max-width: 500px;
+                padding: 40px 30px;
+            }
+            
+            .section-header {
+                padding: 25px 0 8px 25px;
+            }
+            
+            .m-title {
+                font-size: 26px;
+            }
+        }
+        
+        /* Десктоп (1024px жана андан жогору) */
+        @media (min-width: 1024px) {
+            .movie-grid, .glass-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 25px;
+                padding: 20px 40px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            .glass-card, .movie-glass-card {
+                height: 360px;
+                border-radius: 24px;
+            }
+            
+            .glass-footer h3, .glass-overlay-box h3 {
+                font-size: 16px;
+            }
+            
+            .glass-btn {
+                font-size: 12px;
+                padding: 8px 18px;
+            }
+            
+            .nav-wrapper {
+                max-width: 600px;
+                bottom: 35px;
+            }
+            
+            .bottom-nav {
+                height: 80px;
+                border-radius: 30px;
+            }
+            
+            .nav-item .material-icons-round {
+                font-size: 28px;
+            }
+            
+            .nav-item span {
+                font-size: 13px;
+            }
+            
+            .modal-content {
+                max-width: 600px;
+                border-radius: 40px;
+                padding: 45px 35px;
+            }
+            
+            .modal-title {
+                font-size: 32px;
+            }
+            
+            .atkn-modal-container {
+                max-width: 600px;
+                border-radius: 30px;
+                padding: 45px 35px;
+            }
+            
+            .section-header {
+                padding: 30px 0 10px 40px;
+                max-width: 1400px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            
+            .m-title {
+                font-size: 28px;
+            }
+            
+            .app-header {
+                padding: 15px 40px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+                padding: 10px 16px;
+            }
+            
+            /* Hover эффекттерди ПКда гана иштетүү */
+            .glass-card:hover, .movie-glass-card:hover {
+                transform: translateY(-8px);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .time-chip:hover {
+                background: rgba(168, 85, 247, 0.3);
+                transform: scale(1.02);
+            }
+            
+            .btn-main:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 15px 30px rgba(168, 85, 247, 0.3);
+            }
+            
+            .glass-btn:hover {
+                background: rgba(0, 210, 255, 0.3);
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Чоң десктоптор (1440px жана андан жогору) */
+        @media (min-width: 1440px) {
+            .movie-grid, .glass-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 30px;
+                padding: 20px 60px;
+                max-width: 1600px;
+            }
+            
+            .glass-card, .movie-glass-card {
+                height: 400px;
+            }
+            
+            .section-header {
+                padding: 35px 0 12px 60px;
+                max-width: 1600px;
+            }
+        }
