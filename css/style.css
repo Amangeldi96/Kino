@@ -1040,6 +1040,9 @@ body {
         border-color: #a855f7;
         background: rgba(255, 255, 255, 0.1);
     }
+.button {
+  cursor: pointer;
+}
 }
 
 /* Эгер экран өтө чоң болсо (Ultra Wide) */
