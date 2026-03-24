@@ -999,7 +999,7 @@ body {
 
     .glass-card, .movie-glass-card {
         height: 400px; /* Карталарды бир аз чоңойтуу */
-        width: 120px;
+        width: 200px;
         transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
 
