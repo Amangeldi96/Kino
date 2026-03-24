@@ -891,162 +891,680 @@ body {
 }
 
 
-   /* ================= 8. МЕДИА СУРООЛОР (ПК ВЕРСИЯ) ================= */
-        /* Планшеттер (768px жана андан жогору) */
-        @media (min-width: 768px) {
-            .movie-grid, .glass-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                padding: 20px 25px;
-            }
-            
-            .glass-card, .movie-glass-card {
-                height: 320px;
-            }
-            
-            .nav-wrapper {
-                max-width: 500px;
-                bottom: 30px;
-            }
-            
-            .bottom-nav {
-                height: 75px;
-            }
-            
-            .modal-content {
-                max-width: 500px;
-                padding: 40px 30px;
-            }
-            
-            .atkn-modal-container {
-                max-width: 500px;
-                padding: 40px 30px;
-            }
-            
-            .section-header {
-                padding: 25px 0 8px 25px;
-            }
-            
-            .m-title {
-                font-size: 26px;
-            }
+  
+
+/* ================= 8. МЕДИА СУРООЛОР (ПК ВЕРСИЯ) ================= */
+
+/* Планшеттер (768px жана андан жогору) */
+@media (min-width: 768px) {
+    /* Грид системасы - 3 колонка */
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding: 20px 25px;
+    }
+    
+    /* Карталардын бийиктиги */
+    .glass-card, .movie-glass-card {
+        height: 320px;
+        border-radius: 20px;
+    }
+    
+    /* Навигация панели */
+    .nav-wrapper {
+        max-width: 500px;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .bottom-nav {
+        height: 75px;
+        border-radius: 28px;
+    }
+    
+    .nav-item .material-icons-round {
+        font-size: 27px;
+    }
+    
+    .nav-item span {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    
+    /* Модалдар */
+    .modal-content {
+        max-width: 500px;
+        padding: 40px 30px;
+        border-radius: 36px;
+    }
+    
+    .atkn-modal-container {
+        max-width: 500px;
+        padding: 40px 30px;
+        border-radius: 28px;
+    }
+    
+    /* Секция баш сөздөрү */
+    .section-header {
+        padding: 25px 0 8px 25px;
+    }
+    
+    .m-title {
+        font-size: 26px;
+    }
+    
+    .app-header {
+        padding: 12px 25px;
+    }
+    
+    .logo-text {
+        font-size: 18px;
+        padding: 8px 14px;
+    }
+    
+    /* Убакыт чиптери */
+    .time-chips {
+        gap: 10px;
+    }
+    
+    .time-chip {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+    
+    /* Профиль картасы */
+    .profile-card, .auth-screen {
+        max-width: 450px;
+        margin: 0 auto;
+    }
+    
+    .brand-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .brand-icon span {
+        font-size: 38px;
+    }
+}
+
+/* Десктоп (1024px жана андан жогору) - НЕГИЗГИ ПК ВЕРСИЯ */
+@media (min-width: 1024px) {
+    /* Грид системасы - 4 колонка */
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+        padding: 20px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Карталардын өлчөмдөрү */
+    .glass-card, .movie-glass-card {
+        height: 380px;
+        border-radius: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+    
+    /* Hover эффект - ПКда гана иштейт */
+    .glass-card:hover, .movie-glass-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Картанын ичиндеги тексттер */
+    .glass-footer h3, .glass-overlay-box h3 {
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
+    
+    .glass-btn {
+        font-size: 13px;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .glass-btn:hover {
+        background: rgba(0, 210, 255, 0.4);
+        transform: scale(1.05);
+        letter-spacing: 0.5px;
+    }
+    
+    /* Навигация панели - ПКга ыңгайлуу */
+    .nav-wrapper {
+        max-width: 650px;
+        bottom: 40px;
+        transition: all 0.3s ease;
+    }
+    
+    .bottom-nav {
+        height: 85px;
+        border-radius: 35px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+    
+    .nav-item {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .nav-item:hover {
+        transform: translateY(-5px);
+        color: rgba(23, 42, 53, 0.9);
+    }
+    
+    .nav-item .material-icons-round {
+        font-size: 30px;
+        transition: transform 0.3s ease;
+    }
+    
+    .nav-item:hover .material-icons-round {
+        transform: scale(1.1);
+    }
+    
+    .nav-item span {
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 6px;
+    }
+    
+    /* Модалдар - ПКда чоңураак */
+    .modal-content {
+        max-width: 650px;
+        border-radius: 44px;
+        padding: 50px 40px;
+        max-height: 85vh;
+    }
+    
+    .modal-title {
+        font-size: 34px;
+        margin-bottom: 12px;
+    }
+    
+    #selected-movie-name {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    
+    .modal-content .input-box {
+        padding: 14px 20px;
+        margin-bottom: 18px;
+        border-radius: 20px;
+    }
+    
+    .modal-content .input-box .material-icons-round {
+        font-size: 24px;
+    }
+    
+    .modal-content input {
+        font-size: 16px;
+    }
+    
+    .btn-main {
+        padding: 18px;
+        font-size: 17px;
+        border-radius: 24px;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-main:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 35px rgba(168, 85, 247, 0.4);
+    }
+    
+    .btn-outline {
+        padding: 16px;
+        font-size: 15px;
+        border-radius: 22px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+    
+    /* Антикино модалы */
+    .atkn-modal-container {
+        max-width: 650px;
+        border-radius: 36px;
+        padding: 50px 40px;
+        max-height: 85vh;
+    }
+    
+    .atkn-title {
+        font-size: 28px;
+    }
+    
+    .atkn-subtitle {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    
+    .atkn-input-wrapper {
+        padding: 14px 18px;
+        margin-bottom: 18px;
+        border-radius: 18px;
+    }
+    
+    .atkn-field {
+        font-size: 15px;
+    }
+    
+    .atkn-main-btn {
+        padding: 16px;
+        font-size: 17px;
+        border-radius: 18px;
+        transition: all 0.3s ease;
+    }
+    
+    .atkn-main-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Секция баш сөздөрү */
+    .section-header {
+        padding: 35px 0 12px 45px;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    .section-header::before {
+        width: 5px;
+        height: 1.3em;
+    }
+    
+    .m-title {
+        font-size: 30px;
+        letter-spacing: 1px;
+    }
+    
+    /* Хедер */
+    .app-header {
+        padding: 18px 45px;
+    }
+    
+    .logo-text {
+        font-size: 22px;
+        padding: 10px 18px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .logo-text:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.02);
+    }
+    
+    /* Убакыт чиптери */
+    .time-chips {
+        gap: 12px;
+        margin: 10px 0;
+    }
+    
+    .time-chip {
+        padding: 12px 22px;
+        font-size: 14px;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .time-chip:hover {
+        background: rgba(168, 85, 247, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    .time-chip.selected {
+        background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    }
+    
+    /* Профиль секциясы */
+    .profile-card {
+        max-width: 500px;
+        padding: 45px 30px;
+        border-radius: 32px;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .auth-screen {
+        max-width: 500px;
+        padding: 40px 35px;
+        border-radius: 36px;
+    }
+    
+    .brand-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 28px;
+        margin-bottom: 25px;
+    }
+    
+    .brand-icon span {
+        font-size: 44px;
+    }
+    
+    .auth-title {
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+    
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    .input-label {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    
+    .input-box {
+        height: 60px;
+        border-radius: 20px;
+        padding: 0 20px;
+    }
+    
+    .input-box .material-icons-round {
+        font-size: 24px;
+        margin-right: 15px;
+    }
+    
+    .input-box input {
+        font-size: 16px;
+    }
+    
+    .btn-secondary {
+        height: 60px;
+        font-size: 16px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Антикино убакыт гриди */
+    .time-grid {
+        gap: 12px;
+    }
+    
+    .slot-info {
+        padding: 14px;
+        font-size: 14px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .slot-info:hover {
+        background: rgba(0, 255, 204, 0.15);
+        transform: scale(1.02);
+    }
+    
+    .slot-card input:checked + .slot-info {
+        background: rgba(0, 255, 204, 0.25);
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+    }
+    
+    /* Payment info */
+    .payment-info-box, .payment-info {
+        padding: 25px;
+        border-radius: 28px;
+        margin-bottom: 25px;
+    }
+    
+    .bank-name {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .card-num {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+}
+
+/* Чоң десктоптор (1440px жана андан жогору) */
+@media (min-width: 1440px) {
+    /* Грид системасы - 5 колонка */
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 30px;
+        padding: 25px 70px;
+        max-width: 1800px;
+    }
+    
+    /* Карталар чоңураак */
+    .glass-card, .movie-glass-card {
+        height: 420px;
+        border-radius: 28px;
+    }
+    
+    .glass-footer h3, .glass-overlay-box h3 {
+        font-size: 18px;
+    }
+    
+    .glass-btn {
+        font-size: 14px;
+        padding: 10px 24px;
+    }
+    
+    /* Навигация панели */
+    .nav-wrapper {
+        max-width: 750px;
+        bottom: 45px;
+    }
+    
+    .bottom-nav {
+        height: 90px;
+        border-radius: 45px;
+    }
+    
+    .nav-item .material-icons-round {
+        font-size: 32px;
+    }
+    
+    .nav-item span {
+        font-size: 15px;
+        margin-top: 7px;
+    }
+    
+    /* Модалдар */
+    .modal-content {
+        max-width: 750px;
+        padding: 55px 45px;
+        border-radius: 48px;
+    }
+    
+    .modal-title {
+        font-size: 38px;
+    }
+    
+    .atkn-modal-container {
+        max-width: 750px;
+        padding: 55px 45px;
+        border-radius: 40px;
+    }
+    
+    .atkn-title {
+        font-size: 32px;
+    }
+    
+    /* Секция баш сөздөрү */
+    .section-header {
+        padding: 40px 0 15px 75px;
+        max-width: 1800px;
+    }
+    
+    .m-title {
+        font-size: 34px;
+    }
+    
+    .app-header {
+        padding: 20px 75px;
+    }
+    
+    .logo-text {
+        font-size: 24px;
+        padding: 12px 22px;
+    }
+    
+    /* Профиль */
+    .profile-card, .auth-screen {
+        max-width: 550px;
+    }
+    
+    .profile-card {
+        padding: 50px 35px;
+    }
+    
+    .auth-screen {
+        padding: 45px 40px;
+    }
+    
+    .brand-icon {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .brand-icon span {
+        font-size: 50px;
+    }
+}
+
+/* Ультра чоң экрандар (1920px жана андан жогору) */
+@media (min-width: 1920px) {
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 35px;
+        padding: 30px 100px;
+        max-width: 2200px;
+        margin: 0 auto;
+    }
+    
+    .glass-card, .movie-glass-card {
+        height: 450px;
+    }
+    
+    .section-header {
+        padding: 45px 0 18px 100px;
+        max-width: 2200px;
+    }
+    
+    .m-title {
+        font-size: 38px;
+    }
+    
+    .nav-wrapper {
+        max-width: 850px;
+    }
+    
+    .bottom-nav {
+        height: 95px;
+    }
+}
+
+/* Мобилдик ландшафт режими (горизонталь) */
+@media (max-width: 768px) and (orientation: landscape) {
+    .glass-card, .movie-glass-card {
+        height: 220px;
+    }
+    
+    .nav-wrapper {
+        bottom: 15px;
+    }
+    
+    .bottom-nav {
+        height: 60px;
+    }
+    
+    .modal-content, .atkn-modal-container {
+        max-height: 85vh;
+        padding: 25px 20px;
+    }
+    
+    .movie-grid, .glass-grid {
+        gap: 10px;
+        padding: 10px 15px;
+    }
+}
+
+/* Таблеттер үчүн ландшафт режими */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .glass-card, .movie-glass-card {
+        height: 280px;
+    }
+}
+
+/* Стилдүү скролл бардык браузерлер үчүн */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #ec4899, #a855f7);
+}
+
+/* Анимацияларды жакшыртуу */
+* {
+    transition: all 0.2s ease;
+}
+
+/* ПКда гана көрүнүүчү эффекттер */
+@media (min-width: 1024px) {
+    /* Карталарга жумшак анимация */
+    .glass-card, .movie-glass-card {
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
         }
-        
-        /* Десктоп (1024px жана андан жогору) */
-        @media (min-width: 1024px) {
-            .movie-grid, .glass-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 25px;
-                padding: 20px 40px;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
-            
-            .glass-card, .movie-glass-card {
-                height: 360px;
-                border-radius: 24px;
-            }
-            
-            .glass-footer h3, .glass-overlay-box h3 {
-                font-size: 16px;
-            }
-            
-            .glass-btn {
-                font-size: 12px;
-                padding: 8px 18px;
-            }
-            
-            .nav-wrapper {
-                max-width: 600px;
-                bottom: 35px;
-            }
-            
-            .bottom-nav {
-                height: 80px;
-                border-radius: 30px;
-            }
-            
-            .nav-item .material-icons-round {
-                font-size: 28px;
-            }
-            
-            .nav-item span {
-                font-size: 13px;
-            }
-            
-            .modal-content {
-                max-width: 600px;
-                border-radius: 40px;
-                padding: 45px 35px;
-            }
-            
-            .modal-title {
-                font-size: 32px;
-            }
-            
-            .atkn-modal-container {
-                max-width: 600px;
-                border-radius: 30px;
-                padding: 45px 35px;
-            }
-            
-            .section-header {
-                padding: 30px 0 10px 40px;
-                max-width: 1400px;
-                margin: 0 auto;
-                width: 100%;
-            }
-            
-            .m-title {
-                font-size: 28px;
-            }
-            
-            .app-header {
-                padding: 15px 40px;
-            }
-            
-            .logo-text {
-                font-size: 20px;
-                padding: 10px 16px;
-            }
-            
-            /* Hover эффекттерди ПКда гана иштетүү */
-            .glass-card:hover, .movie-glass-card:hover {
-                transform: translateY(-8px);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            
-            .time-chip:hover {
-                background: rgba(168, 85, 247, 0.3);
-                transform: scale(1.02);
-            }
-            
-            .btn-main:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 15px 30px rgba(168, 85, 247, 0.3);
-            }
-            
-            .glass-btn:hover {
-                background: rgba(0, 210, 255, 0.3);
-                transform: scale(1.05);
-            }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-        
-        /* Чоң десктоптор (1440px жана андан жогору) */
-        @media (min-width: 1440px) {
-            .movie-grid, .glass-grid {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 30px;
-                padding: 20px 60px;
-                max-width: 1600px;
-            }
-            
-            .glass-card, .movie-glass-card {
-                height: 400px;
-            }
-            
-            .section-header {
-                padding: 35px 0 12px 60px;
-                max-width: 1600px;
-            }
-        }
+    }
+    
+    /* Карталардын кечигип көрүнүшү */
+    .glass-card:nth-child(1) { animation-delay: 0.05s; }
+    .glass-card:nth-child(2) { animation-delay: 0.1s; }
+    .glass-card:nth-child(3) { animation-delay: 0.15s; }
+    .glass-card:nth-child(4) { animation-delay: 0.2s; }
+    .glass-card:nth-child(5) { animation-delay: 0.25s; }
+    .glass-card:nth-child(6) { animation-delay: 0.3s; }
+    .glass-card:nth-child(7) { animation-delay: 0.35s; }
+    .glass-card:nth-child(8) { animation-delay: 0.4s; }
+}
