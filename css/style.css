@@ -26,7 +26,32 @@ body {
     color: white;
     overflow-x: hidden;
 }
+/* Текстти белгилөөнү өчүрүү */
+html, body {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Standard syntax */
+}
 
+/* Бирок инпуттардын ичине текст жазуу үчүн аларды иштетип коюу керек */
+input, textarea {
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* Сүрөттөрдү сүйрөп (drag) же сактап алууну чектөө */
+img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none; /* Сүрөттү такыр басууга болбойт */
+}
+
+/* Эгер кино карталарындагы сүрөттөр басылышы керек болсо, 
+   анда картанын өзүнө pointer-events: auto; берип кой */
+.glass-card img, .movie-glass-card img {
+    pointer-events: none;
+}
 /* ================= КУРСОР ЖАНА ИНТЕРАКТИВДҮҮЛҮК ================= */
 
 /* Бардык баскычтар, шилтемелер жана тандалуучу элементтер үчүн */
