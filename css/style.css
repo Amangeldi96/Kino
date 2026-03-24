@@ -1,293 +1,432 @@
-/* TOKTOGUL CINEMA - FINAL PROFESSIONAL STYLES (2026)
-   Glassmorphism + Ultra Responsive UI
-*/
-
-/* ================= 1. ГЛОБАЛДЫК ЖАНА ӨЗГӨРМӨЛӨР ================= */
+/* ================= 1. НЕГИЗГИ ЖАНА ГЛОБАЛДЫК СТИЛДЕР ================= */
 :root {
     --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+    --danger-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --accent-color: #00d2ff;
     --glass-blur: blur(20px);
-    --accent: #00d2ff;
     --text-white: #ffffff;
-    --text-dim: rgba(255, 255, 255, 0.6);
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { 
     box-sizing: border-box; 
     -webkit-tap-highlight-color: transparent; 
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    margin: 0; padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    text-decoration: none !important;
 }
 
 body {
-    background: radial-gradient(circle at top right, #1e1e3f, #111122);
-    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
     min-height: 100vh;
-    color: var(--text-white);
+    color: white;
     overflow-x: hidden;
-    line-height: 1.6;
 }
 
-/* Скроллду кооздоо */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+/* Контент блогу */
+.content-section {
+    padding-bottom: 120px !important;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
 
-/* ================= 2. HEADER ЖАНА ПК НАВИГАЦИЯ ================= */
+.no-scroll { overflow: hidden; height: 100vh; }
+
+/* --- App Header & Logo --- */
 .app-header {
-    padding: 15px 5%;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-bottom: var(--glass-border);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .logo-text { 
-    padding: 8px 18px;
-    font-weight: 900; 
-    font-size: 20px; 
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    border: var(--glass-border);
+    padding: 8px 12px;
+    font-weight: 800; 
+    font-size: 17px; 
+    background: rgba(255, 255, 255, 0.1); 
     border-radius: 12px;
-    letter-spacing: 1px;
-}
-
-/* ПК үчүн меню (Башында мобилдикте жашыруун) */
-.desktop-menu {
-    display: none;
-    gap: 25px;
-}
-
-.desktop-menu a {
-    color: var(--text-dim);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    transition: var(--transition);
-    position: relative;
-}
-
-.desktop-menu a:hover, .desktop-menu a.active {
-    color: #fff;
-}
-
-.desktop-menu a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px; left: 0; width: 100%; height: 2px;
-    background: var(--primary-gradient);
-    border-radius: 2px;
-}
-
-/* ================= 3. НЕГИЗГИ МАЗМУН (GRID) ================= */
-.content-section {
-    padding: 20px 0 140px;
-    max-width: 1400px;
-    margin: 0 auto;
+    border: var(--glass-border);
 }
 
 .section-header {
-    padding: 25px 5%;
-    display: flex; align-items: center; gap: 15px;
+    padding: 20px 0 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .section-header::before {
-    content: ""; width: 6px; height: 26px;
-    background: var(--primary-gradient); border-radius: 10px;
+    content: "";
+    width: 4px;
+    height: 1.2em;
+    background-color: white;
+    border-radius: 2px;
 }
 
-.m-title { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
+.m-title { font-size: 22px; font-weight: bold; text-transform: uppercase; }
 
-.movie-grid {
+/* ================= 2. КИНО КАРТАЛАРЫ (GRID) ================= */
+.movie-grid, .glass-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    padding: 0 5%;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 10px 15px;
 }
 
-.glass-card {
+.glass-card, .movie-glass-card {
     position: relative;
-    height: 310px;
-    border-radius: 24px;
+    height: 280px;
+    border-radius: 18px;
     overflow: hidden;
     border: var(--glass-border);
-    background: var(--glass-bg);
-    transition: var(--transition);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
 }
 
-.glass-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    border-color: rgba(255,255,255,0.4);
-}
-
-.glass-card img {
+.glass-card img, .movie-glass-card img {
     width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.6s ease;
 }
 
-.glass-card:hover img { transform: scale(1.1); }
-
-.glass-footer {
+.glass-footer, .glass-overlay-box {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    padding: 16px;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    backdrop-filter: blur(8px);
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: var(--glass-border);
+    text-align: center;
 }
 
-.glass-footer h3 { font-size: 14px; margin-bottom: 10px; font-weight: 700; }
-
-.glass-btn {
-    width: 100%; padding: 12px;
-    background: var(--primary-gradient);
-    border: none; border-radius: 14px;
-    color: #fff; font-weight: 800;
-    cursor: pointer; text-transform: uppercase;
-    transition: 0.3s;
+.glass-footer h3, .glass-overlay-box h3 {
+    font-size: 13px; font-weight: 700; margin: 0 0 8px 0;
 }
 
-.glass-btn:active { transform: scale(0.95); }
-
-/* ================= 4. АНТИКИНО МОДАЛКАСЫ ================= */
-.modal-overlay, #atkn-modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    display: none; justify-content: center; align-items: center;
-    backdrop-filter: blur(15px); z-index: 2000;
-    padding: 20px;
+.glass-btn, .glass-date-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 800;
+    color: var(--accent-color);
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
 }
-
-.atkn-modal-container {
-    width: 100%; max-width: 480px;
-    background: rgba(255, 255, 255, 0.05);
-    border: var(--glass-border);
-    border-radius: 32px; padding: 35px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.7);
-    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes modalPop {
-    from { opacity: 0; transform: scale(0.8) translateY(40px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.atkn-title { font-size: 26px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-.atkn-subtitle { color: var(--text-dim); text-align: center; font-size: 14px; margin-bottom: 25px; }
-
-.atkn-input-wrapper {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px; padding: 14px 18px;
-    margin-bottom: 15px; display: flex; align-items: center; gap: 12px;
-}
-
-.atkn-field {
-    background: transparent; border: none; color: #fff;
-    width: 100%; outline: none; font-size: 16px;
-}
-
-.time-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 12px; margin: 20px 0;
-}
-
-.slot-info {
-    padding: 14px; background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px; text-align: center; cursor: pointer;
-    transition: 0.3s; font-size: 14px;
-}
-
-.slot-card input:checked + .slot-info {
-    background: var(--primary-gradient);
-    border: none; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
-}
-
-.atkn-main-btn {
-    width: 100%; padding: 16px; margin-top: 10px;
-    background: var(--primary-gradient);
-    border: none; border-radius: 18px;
-    color: #fff; font-size: 16px; font-weight: 800;
-    cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-/* ================= 5. МОБИЛДИК НАВИГАЦИЯ (BOTTOM NAV) ================= */
-.nav-wrapper {
-    position: fixed; bottom: 25px; left: 50%;
-    transform: translateX(-50%);
-    width: 90%; max-width: 400px; z-index: 1100;
-}
-
-.bottom-nav {
-    background: rgba(25, 25, 45, 0.6);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    height: 75px; border-radius: 28px;
-    display: flex; justify-content: space-around; align-items: center;
-    border: var(--glass-border);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-}
-
-.nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    color: var(--text-dim); text-decoration: none; transition: 0.3s;
-}
-
-.nav-item.active { color: #fff; transform: translateY(-5px); }
-.nav-item i, .nav-item .material-icons-round { font-size: 24px; margin-bottom: 4px; }
-.nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
-
-/* ================= 6. ПК ВЕРСИЯ (PC ADAPTATION) ================= */
-@media (min-width: 1024px) {
-    /* Мобилдик менюну өчүрүү */
-    .nav-wrapper { display: none; }
-    
-    /* Хедердеги менюну чыгаруу */
-    .desktop-menu { display: flex; }
-    
-    .app-header { padding: 18px 8%; }
-    .content-section { padding-top: 50px; }
-
-    /* Кинолорду ПКда 4 же 5тен тизүү */
-    .movie-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 30px; padding: 0 8%;
-    }
-
-    .glass-card { height: 400px; }
-
-    .atkn-modal-container {
-        max-width: 600px; padding: 50px;
-    }
-
-    .time-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1440px) {
-    .movie-grid { grid-template-columns: repeat(5, 1fr); }
-}
-
-/* ================= 7. ТОЛКУНДАР (WAVES) ================= */
+/* ================= 3. ТОЛКУНДАР (WAVES) - АНИМАЦИЯ ================= */
 .waves-container {
-    position: fixed; bottom: 0; width: 100%; height: 120px;
-    z-index: -1; pointer-events: none; opacity: 0.4;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 15vh;
+    min-height: 100px;
+    z-index: 5;
+    pointer-events: none;
 }
+
+.waves { position: relative; width: 100%; height: 100%; }
 
 .parallax > use {
     animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
 }
+.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
+
 @keyframes move-forever {
-    0% { transform: translate3d(-90px, 0, 0); }
-    100% { transform: translate3d(85px, 0, 0); }
+    0% { transform: translate3d(-90px,0,0); }
+    100% { transform: translate3d(85px,0,0); }
 }
+
+/* ================= 4. ФУТЕР (BOTTOM NAVIGATION) ================= */
+.nav-wrapper {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1100;
+}
+
+.bottom-nav {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    height: 70px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.5);
+    transition: 0.3s;
+}
+
+.nav-item.active {
+    color: white;
+    transform: translateY(-2px);
+}
+
+.nav-item .material-icons-round { font-size: 26px; }
+.nav-item span { font-size: 12px; font-weight: 700; margin-top: 4px; }
+
+/* ================= 5. БРОНДОО МОДАЛКАСЫ (BOOKING MODAL) ================= */
+#booking-modal {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 20px;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(25px); 
+    border-radius: 32px;
+    padding: 35px 24px; 
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.modal-content::-webkit-scrollbar { display: none; }
+
+.modal-title {
+    font-size: 26px; font-weight: 800; margin-bottom: 8px !important;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+}
+
+#selected-movie-name {
+    color: #94a3b8; font-size: 15px; margin-bottom: 25px !important;
+    display: block; font-weight: 500; text-align: center;
+}
+
+/* Инпуттардын дизайны */
+.modal-content .input-box {
+    margin-bottom: 16px !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-content input {
+    background: none; border: none; color: white;
+    font-size: 15px; width: 100%; outline: none;
+}
+
+/* Баскычтар */
+.btn-main {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
+}
+
+.time-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+.time-chip {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white; font-size: 13px; cursor: pointer;
+}
+.time-chip.selected { background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); border: none; }
+/* ================= 6. ПРОФИЛЬ ЖАНА АВТОРИЗАЦИЯ ================= */
+#profile-section {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px 15px 120px;
+    flex-direction: column; 
+    align-items: center;
+    background: transparent;
+}
+
+#profile-section.active-section {
+    display: flex !important;
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 40px;
+}
+
+.auth-screen {
+    display: none;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 30px 25px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.auth-screen.active { display: block !important; }
+
+.brand-icon {
+    width: 65px; height: 65px;
+    background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.input-box {
+    height: 55px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    display: flex; align-items: center;
+    padding: 0 15px;
+    margin-bottom: 15px;
+}
+
+.input-box input {
+    flex: 1; background: transparent; border: none;
+    outline: none; color: white; font-size: 15px;
+}
+
+.btn-secondary {
+    width: 100%; height: 55px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    color: white; margin-top: 15px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+}
+
+/* ================= 7. АНТИ-КИНО МОДАЛДАРЫ ================= */
+#atkn-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none; justify-content: center; align-items: center;
+    z-index: 10000; backdrop-filter: blur(8px);
+}
+
+.atkn-modal-container {
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    width: 95%; max-width: 400px; 
+    padding: 35px 25px; border-radius: 20px;
+    max-height: 90vh; overflow-y: auto;
+    color: white; text-align: center;
+}
+
+.atkn-modal-container::-webkit-scrollbar { display: none; }
+
+.payment-info {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px; padding: 15px; margin-bottom: 15px;
+    border: 1px dashed rgba(255, 255, 255, 0.4);
+}
+
+.bank-name { font-weight: 800; color: #00ffcc; margin-bottom: 5px; display: block; }
+.card-num { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+
+/* Убакыт слоттору */
+.time-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-top: 10px;
+}
+
+.slot-info {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; padding: 12px 5px;
+    text-align: center; transition: 0.3s;
+}
+
+.slot-card input:checked + .slot-info {
+    background: rgba(0, 255, 204, 0.2);
+    border-color: #00ffcc; color: #00ffcc;
+}
+
+/* Accordion Style */
+.atkn-menu-accordion { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+
+.menu-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.menu-header {
+    padding: 15px; display: flex;
+    justify-content: space-between; align-items: center;
+    cursor: pointer;
+}
+
+.item-price { color: #00ffcc; font-weight: bold; margin-left: auto; }
+
+/* Custom Checkbox */
+.check-container {
+    display: flex; align-items: center; position: relative;
+    padding-left: 35px; cursor: pointer; font-size: 13px;
+}
+
+.check-container input { position: absolute; opacity: 0; }
+
+.checkmark {
+    position: absolute; left: 0; height: 20px; width: 20px;
+    background-color: rgba(255,255,255,0.1); border-radius: 6px;
+}
+
+.check-container input:checked ~ .checkmark { background-color: #00ffcc; }
+
+.checkmark:after {
+    content: ""; position: absolute; display: none;
+    left: 7px; top: 3px; width: 5px; height: 10px;
+    border: solid #000; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.check-container input:checked ~ .checkmark:after { display: block; }
