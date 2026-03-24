@@ -893,3 +893,120 @@ body {
 
   
 
+/* ================================================================
+   PC (DESKTOP) ВЕРСИЯ ҮЧҮН МЕДИА ЖАЗУУ (1024px ЖОГОРУ)
+================================================================ */
+
+@media (min-width: 1024px) {
+    
+    /* 1. Навигацияны өйдө жака жылдыруу */
+    .nav-wrapper {
+        top: 0;
+        bottom: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: none;
+        transform: none;
+        border-radius: 0;
+        padding: 0;
+    }
+
+    .bottom-nav {
+        height: 80px;
+        border-radius: 0;
+        background: rgba(15, 23, 42, 0.85); /* Күңүрт айнек фон */
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        justify-content: center; /* Элементтер ортодо */
+        gap: 60px; /* Элементтер арасындагы аралык */
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-item {
+        flex-direction: row; /* Иконка менен текстти катар тизүү */
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .nav-item.active {
+        color: #00ffcc;
+        border-bottom: 2px solid #00ffcc;
+        padding-bottom: 5px;
+        transform: none;
+    }
+
+    .nav-item .material-icons-round {
+        font-size: 24px;
+    }
+
+    .nav-item span {
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* 2. Контентти (Кинолорду) жөндөө */
+    .content-section {
+        padding-top: 120px; /* Меню өйдөдө болгондуктан боштук */
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .movie-grid, .glass-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Кинолор 4-5тен тизилет */
+        gap: 30px;
+        padding: 20px 40px;
+    }
+
+    .glass-card, .movie-glass-card {
+        height: 380px; /* Карталарды бир аз чоңойтуу */
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        border-color: rgba(0, 255, 204, 0.4);
+    }
+
+    /* 3. Модалкаларды (VIP, Анти-кино) ПКга ылайыктоо */
+    .modal-content, .atkn-modal-container {
+        max-width: 500px; /* Модалка ПКда өтө жайылбашы керек */
+        padding: 45px;
+        border-radius: 40px;
+    }
+
+    .modal-title, .atkn-title {
+        font-size: 32px;
+    }
+
+    /* 4. Толкундарды (Waves) ПКда азайтуу же жашыруу */
+    .waves-container {
+        height: 10vh;
+        opacity: 0.5;
+    }
+
+    /* 5. Профиль бөлүмү */
+    #profile-section {
+        padding-top: 150px;
+    }
+
+    .auth-wrapper {
+        max-width: 400px;
+    }
+
+    /* Инпуттарды ховер кылганда эффект */
+    .input-box:hover {
+        border-color: #a855f7;
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Эгер экран өтө чоң болсо (Ultra Wide) */
+@media (min-width: 1600px) {
+    .movie-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
